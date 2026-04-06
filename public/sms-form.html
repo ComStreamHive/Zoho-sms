@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMS Conversation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:           #f0f2f5;
+      --white:        #ffffff;
+      --surface:      #f8f9fb;
+      --border:       #e4e7ec;
+      --border-hi:    #c9d0db;
+      --accent:       #2563eb;
+      --accent-light: #eff4ff;
+      --accent-mid:   #bfcffe;
+      --accent-hover: #1d4ed8;
+      --green:        #059669;
+      --green-light:  #ecfdf5;
+      --red:          #dc2626;
+      --red-light:    #fef2f2;
+      --amber:        #d97706;
+      --text:         #111827;
+      --text-sub:     #374151;
+      --text-muted:   #6b7280;
+      --text-faint:   #9ca3af;
+      --radius:       12px;
+      --radius-sm:    8px;
+      --radius-xs:    6px;
+      --shadow-sm:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow:       0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body { height: 100%; width: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'Figtree', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .app { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; }
+
+    /* HEADER */
+    .header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 60px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-logo {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 17px;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+      flex-shrink: 0;
+    }
+    .header-text h1 { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.2px; }
+    .header-text p  { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .live-badge {
+      display: flex; align-items: center; gap: 5px;
+      padding: 5px 10px;
+      background: var(--green-light);
+      border: 1px solid #a7f3d0;
+      border-radius: 20px;
+      font-size: 11px; font-weight: 600; color: var(--green);
+    }
+    .live-dot {
+      width: 6px; height: 6px;
+      background: var(--green); border-radius: 50%;
+      animation: livepulse 2s ease-in-out infinite;
+    }
+    @keyframes livepulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+    /* BODY */
+    .body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* LEFT PANEL */
+    .left-panel {
+      display: flex; flex-direction: column;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      overflow: hidden; min-height: 0;
+    }
+    .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-faint); }
+
+    .recipient-wrap { padding: 18px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .recipient-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      background: var(--accent-light);
+      border: 1px solid var(--accent-mid);
+      border-radius: var(--radius-sm);
+      margin-top: 10px;
+    }
+    .avatar {
+      width: 38px; height: 38px;
+      background: var(--accent); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 14px; font-weight: 700; flex-shrink: 0;
+    }
+    .recipient-info .rname  { font-size: 14px; font-weight: 600; color: var(--text); }
+    .recipient-info .rphone { font-size: 12px; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+
+    .compose-wrap {
+      flex: 1; display: flex; flex-direction: column;
+      padding: 18px 20px; gap: 10px;
+      overflow: hidden; min-height: 0;
+    }
+    textarea {
+      flex: 1; width: 100%;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'Figtree', sans-serif;
+      font-size: 14px; line-height: 1.6;
+      resize: none; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      min-height: 0;
+    }
+    textarea::placeholder { color: var(--text-faint); }
+    textarea:focus {
+      border-color: var(--accent);
+      background: var(--white);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    .char-row { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .char-track { flex: 1; height: 3px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .char-fill  { height: 100%; width: 0%; background: var(--accent); border-radius: 3px; transition: width 0.15s, background 0.15s; }
+    .char-text  { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-faint); white-space: nowrap; }
+    .char-text.warn   { color: var(--amber); }
+    .char-text.danger { color: var(--red); font-weight: 600; }
+
+    .status-area { padding: 0 20px; flex-shrink: 0; min-height: 36px; }
+    .status-pill {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 12px;
+      border-radius: var(--radius-xs);
+      font-size: 13px; font-weight: 500;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+    .status-pill.success { background: var(--green-light); color: var(--green); border: 1px solid #a7f3d0; }
+    .status-pill.error   { background: var(--red-light);   color: var(--red);   border: 1px solid #fecaca; }
+
+    .action-row {
+      display: flex; gap: 8px;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border); flex-shrink: 0;
+    }
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 18px;
+      border-radius: var(--radius-xs);
+      font-size: 13px; font-weight: 600;
+      font-family: 'Figtree', sans-serif;
+      cursor: pointer; border: none;
+      transition: all 0.15s; white-space: nowrap;
+    }
+    .btn-close { background: var(--surface); color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-close:hover { background: var(--border); color: var(--text-sub); }
+    .btn-send {
+      flex: 1;
+      background: var(--accent); color: white;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+    }
+    .btn-send:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,99,235,0.35); }
+    .btn-send:active:not(:disabled) { transform: translateY(0); }
+    .btn-send:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+    .spin {
+      width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* RIGHT PANEL */
+    .right-panel { display: flex; flex-direction: column; background: var(--bg); overflow: hidden; min-height: 0; }
+    .chat-topbar {
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      background: var(--white); border-bottom: 1px solid var(--border);
+    }
+    .chat-topbar-left { display: flex; align-items: center; gap: 10px; }
+    .chat-title { font-size: 14px; font-weight: 700; color: var(--text); }
+    .count-chip {
+      padding: 2px 8px;
+      background: var(--accent-light); color: var(--accent);
+      border-radius: 20px; font-size: 11px; font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .updated-text { font-size: 11px; color: var(--text-faint); }
+    .icon-btn {
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-xs); cursor: pointer;
+      font-size: 14px; color: var(--text-muted); transition: all 0.15s;
+    }
+    .icon-btn:hover { background: var(--border); color: var(--text); }
+
+    /* Messages */
+    .messages-scroll {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding: 20px;
+      display: flex; flex-direction: column; gap: 2px;
+      min-height: 0;
+    }
+    .messages-scroll::-webkit-scrollbar { width: 5px; }
+    .messages-scroll::-webkit-scrollbar-track { background: transparent; }
+    .messages-scroll::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 5px; }
+
+    .divider { display: flex; align-items: center; gap: 10px; margin: 14px 0 8px; }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-label { font-size: 11px; font-weight: 600; color: var(--text-faint); white-space: nowrap; }
+
+    .msg-row { display: flex; margin-bottom: 3px; animation: msgpop 0.2s ease; }
+    @keyframes msgpop { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* outbound = You = LEFT */
+    .msg-row.outbound { justify-content: flex-start; }
+    .msg-row.outbound .bubble {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 3px;
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+    /* inbound = Customer = RIGHT */
+    .msg-row.inbound { justify-content: flex-end; }
+    .msg-row.inbound .bubble {
+      background: var(--accent);
+      border-bottom-right-radius: 3px;
+      color: white;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.2);
+    }
+
+    /* sending = local placeholder = LEFT, dimmed */
+    .msg-row.sending { justify-content: flex-start; opacity: 0.6; }
+    .msg-row.sending .bubble {
+      background: var(--white);
+      border: 1px dashed var(--border-hi);
+      border-bottom-left-radius: 3px;
+      color: var(--text-muted);
+    }
+
+    .bubble {
+      max-width: 64%; padding: 9px 13px 7px; border-radius: 12px;
+      font-size: 14px; line-height: 1.55;
+      word-wrap: break-word; overflow-wrap: break-word;
+    }
+    .b-from { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; opacity: 0.55; }
+    .b-text { white-space: pre-wrap; word-break: break-word; }
+    .b-time { font-size: 10px; font-family: 'JetBrains Mono', monospace; opacity: 0.5; margin-top: 5px; }
+    .msg-row.outbound .b-time, .msg-row.sending .b-time { text-align: left; }
+    .msg-row.inbound  .b-time { text-align: right; }
+
+    .state-box {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 14px; padding: 40px 20px; text-align: center;
+    }
+    .state-icon {
+      width: 52px; height: 52px;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; box-shadow: var(--shadow-sm);
+    }
+    .state-box h3 { font-size: 15px; font-weight: 700; color: var(--text-sub); }
+    .state-box p  { font-size: 13px; color: var(--text-muted); max-width: 240px; }
+    .big-spin {
+      width: 26px; height: 26px;
+      border: 3px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo">💬</div>
+      <div class="header-text">
+        <h1>SMS Conversation</h1>
+        <p>ZOHO</p>
+      </div>
+    </div>
+    <div class="live-badge"><span class="live-dot"></span>Live</div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- LEFT -->
+    <div class="left-panel">
+      <div class="recipient-wrap" id="recipientWrap" style="display:none">
+        <div class="section-label">Sending To</div>
+        <div class="recipient-card">
+          <div class="avatar" id="avatarEl">?</div>
+          <div class="recipient-info">
+            <div class="rname"  id="rname"></div>
+            <div class="rphone" id="rphone"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="compose-wrap">
+        <div class="section-label">New Message</div>
+        <textarea id="msgInput" placeholder="Type your message…&#10;&#10;Enter to send · Shift+Enter for new line" maxlength="1600"></textarea>
+        <div class="char-row">
+          <div class="char-track"><div class="char-fill" id="charFill"></div></div>
+          <span class="char-text" id="charText">0 / 1600</span>
+        </div>
+      </div>
+
+      <div class="status-area" id="statusArea"></div>
+
+      <div class="action-row">
+        <button class="btn btn-close" onclick="window.close()">✕ Close</button>
+        <button class="btn btn-send" id="sendBtn" onclick="sendSMS()">
+          <span id="sendLabel">Send Message ↑</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+      <div class="chat-topbar">
+        <div class="chat-topbar-left">
+          <span class="chat-title">Conversation History</span>
+          <span class="count-chip" id="countChip">0</span>
+        </div>
+        <div class="topbar-right">
+          <span class="updated-text" id="updatedText"></span>
+          <div class="icon-btn" onclick="loadMessages()" title="Refresh">↻</div>
+        </div>
+      </div>
+      <div class="messages-scroll" id="msgScroll">
+        <div class="state-box">
+          <div class="big-spin"></div>
+          <p>Loading conversation…</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const phone  = params.get('phone') || '';
+  const name   = params.get('name')  || 'Customer';
+
+  // ── State ─────────────────────────────────────────────────
+  // apiMessages: always reflects latest API data (correct direction)
+  // pendingLocal: messages sent but not yet confirmed by API
+  let apiMessages   = [];
+  let pendingLocal  = [];
+  let isFirstLoad   = true;
+  let isLoading     = false;
+
+  // ── Setup recipient ───────────────────────────────────────
+  if (phone) {
+    const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
+    document.getElementById('avatarEl').textContent           = init || '?';
+    document.getElementById('rname').textContent              = name;
+    document.getElementById('rphone').textContent             = fmtPhone(phone);
+    document.getElementById('recipientWrap').style.display    = 'block';
+  }
+
+  // ── Char counter ──────────────────────────────────────────
+  const msgInput = document.getElementById('msgInput');
+  msgInput.oninput = () => {
+    const len  = msgInput.value.length;
+    const pct  = (len / 1600) * 100;
+    const fill = document.getElementById('charFill');
+    const txt  = document.getElementById('charText');
+    fill.style.width      = pct + '%';
+    fill.style.background = len > 1400 ? '#dc2626' : len > 1200 ? '#d97706' : '#2563eb';
+    txt.textContent       = `${len} / 1600`;
+    txt.className         = 'char-text' + (len > 1400 ? ' danger' : len > 1200 ? ' warn' : '');
+  };
+
+  // ── Utilities ─────────────────────────────────────────────
+  function fmtPhone(p) {
+    const c = p.replace(/\D/g, '');
+    return c.length === 10 ? `(${c.substr(0,3)}) ${c.substr(3,3)}-${c.substr(6,4)}` : p;
+  }
+
+  function fmtTime(ts) {
+    if (!ts) return '';
+    const d    = new Date(ts), now = new Date();
+    const days = Math.floor((now - d) / 86400000);
+    const t    = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    if (days === 0) return t;
+    if (days === 1) return 'Yesterday · ' + t;
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · ' + t;
+  }
+
+  function fmtDateLabel(ts) {
+    const d    = new Date(ts), now = new Date();
+    const days = Math.floor((now - d) / 86400000);
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  }
+
+  function esc(t) {
+    const d = document.createElement('div');
+    d.textContent = t;
+    return d.innerHTML;
+  }
+
+  function nearBottom() {
+    const el = document.getElementById('msgScroll');
+    return (el.scrollHeight - el.scrollTop - el.clientHeight) < 120;
+  }
+
+  function scrollDown() {
+    const el = document.getElementById('msgScroll');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  // ── Render ────────────────────────────────────────────────
+  // Merge apiMessages + pendingLocal (pending shown dimmed at bottom)
+  function render() {
+    const scroll   = document.getElementById('msgScroll');
+    const wasNear  = nearBottom();
+    scroll.innerHTML = '';
+
+    // Filter pending: only show locals not yet confirmed in API
+    const confirmedTexts = new Set(apiMessages.map(m => m.text.trim()));
+    const visiblePending = pendingLocal.filter(p => !confirmedTexts.has(p.text.trim()));
+
+    const combined = [
+      ...apiMessages,
+      ...visiblePending
+    ].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    if (!combined.length) {
+      scroll.innerHTML = `
+        <div class="state-box">
+          <div class="state-icon">💬</div>
+          <h3>No messages yet</h3>
+          <p>Send the first message to start the conversation</p>
+        </div>`;
+      return;
+    }
+
+    let lastLabel = '';
+    combined.forEach(msg => {
+      const label = fmtDateLabel(msg.timestamp);
+      if (label !== lastLabel) {
+        lastLabel = label;
+        const div = document.createElement('div');
+        div.className = 'divider';
+        div.innerHTML = `<div class="divider-line"></div><span class="divider-label">${label}</span><div class="divider-line"></div>`;
+        scroll.appendChild(div);
+      }
+
+      const row    = document.createElement('div');
+      // pending local messages use 'sending' class for dimmed style
+      const cls    = msg.source === 'local' ? 'sending' : msg.direction;
+      row.className = `msg-row ${cls}`;
+      const sender  = msg.direction === 'outbound' || msg.source === 'local' ? 'You' : name;
+
+      row.innerHTML = `
+        <div class="bubble">
+          <div class="b-from">${esc(sender)}</div>
+          <div class="b-text">${esc(msg.text)}</div>
+          <div class="b-time">${msg.source === 'local' ? 'Sending…' : fmtTime(msg.timestamp)}</div>
+        </div>`;
+      scroll.appendChild(row);
+    });
+
+    document.getElementById('countChip').textContent = apiMessages.length;
+
+    if (wasNear || isFirstLoad) scrollDown();
+  }
+
+  // ── Load — REPLACE apiMessages each time (no accumulation) ─
+  async function loadMessages() {
+    if (isLoading || !phone) return;
+    isLoading = true;
+
+    try {
+      const res  = await fetch('/api/sms/history/' + phone);
+      const data = await res.json();
+
+      if (data.success && data.messages) {
+        const newSig = data.messages.map(m => m.id + m.direction + m.text).join('|');
+        const oldSig = apiMessages.map(m => m.id + m.direction + m.text).join('|');
+        if (newSig !== oldSig || isFirstLoad) {
+          apiMessages = data.messages;
+          render();
+        }
+        document.getElementById('updatedText').textContent =
+          'Updated ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      } else if (isFirstLoad) {
+        document.getElementById('msgScroll').innerHTML = `
+          <div class="state-box">
+            <div class="state-icon">💬</div>
+            <h3>No messages yet</h3>
+            <p>Send the first message to start the conversation</p>
+          </div>`;
+      }
+
+      isFirstLoad = false;
+    } catch (err) {
+      console.error(err);
+      if (isFirstLoad) {
+        document.getElementById('msgScroll').innerHTML = `
+          <div class="state-box">
+            <div class="state-icon">⚠️</div>
+            <h3>Unable to load</h3>
+            <p>Check your connection and try again</p>
+          </div>`;
+      }
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  // ── Send ──────────────────────────────────────────────────
+  async function sendSMS() {
+    const msg   = msgInput.value.trim();
+    const btn   = document.getElementById('sendBtn');
+    const label = document.getElementById('sendLabel');
+
+    if (!msg)   { showStatus('error', 'Please enter a message'); return; }
+    if (!phone) { showStatus('error', 'No phone number provided'); return; }
+
+    btn.disabled    = true;
+    label.innerHTML = '<div class="spin"></div>';
+
+    // Add local pending placeholder immediately for instant feedback
+    const localMsg = {
+      id:        'local-' + Date.now(),
+      text:      msg,
+      timestamp: new Date().toISOString(),
+      direction: 'outbound',
+      source:    'local'
+    };
+    pendingLocal.push(localMsg);
+    render();
+
+    try {
+      const res  = await fetch('/api/sms/send', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ phone, message: msg })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        showStatus('success', `Sent to ${name}`);
+        msgInput.value = '';
+        document.getElementById('charText').textContent = '0 / 1600';
+        document.getElementById('charFill').style.width = '0%';
+
+        // Poll API to confirm — pending placeholder auto-removed when API confirms
+        setTimeout(loadMessages, 2000);
+        setTimeout(loadMessages, 5000);
+      } else {
+        // Remove pending placeholder on failure
+        pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
+        render();
+        throw new Error(data.error || 'Failed to send');
+      }
+    } catch (err) {
+      // Remove pending placeholder on error
+      pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
+      render();
+      showStatus('error', err.message);
+    } finally {
+      btn.disabled    = false;
+      label.innerHTML = 'Send Message ↑';
+      msgInput.focus();
+    }
+  }
+
+  function showStatus(type, msg) {
+    const area = document.getElementById('statusArea');
+    const icon = type === 'success' ? '✓' : '✕';
+    area.innerHTML = `<div class="status-pill ${type}">${icon} ${msg}</div>`;
+    if (type === 'success') setTimeout(() => { area.innerHTML = ''; }, 3000);
+  }
+
+  // ── Boot ──────────────────────────────────────────────────
+  if (phone) loadMessages();
+  setInterval(loadMessages, 10000);
+
+  msgInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendSMS(); }
+  });
+  msgInput.focus();
+</script>
+</body>
+</html>
