@@ -131,15 +131,22 @@ app.get('/sms-form.html', (req, res) => {
     'zoho.com',
     'zohocrm.com',
     'zohoapps.com',
+    'https://zohosms.streamtechnologies.in'
   ];
 
   const isAllowed = allowedSources.some(source =>
     referer.includes(source) || origin.includes(source)
   );
 
-  if (isAllowed) return res.sendFile(path.join(__dirname, 'public', 'sms-form.html'));
+const key = req.query.key || '';
 
-  res.status(403).send(ACCESS_DENIED_HTML);
+// Allow if from Zoho OR valid key
+if (isAllowed || key === PAGE_ACCESS_KEY) {
+  return res.sendFile(path.join(__dirname, 'public', 'sms-form.html'));
+}
+
+res.status(403).send(ACCESS_DENIED_HTML);
+
 });
 
 // ============================================================
