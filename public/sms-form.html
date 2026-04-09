@@ -604,8 +604,14 @@ if (phone) {
     const wasNear = nearBottom();
     scroll.innerHTML = '';
 
-    const confirmedTexts = new Set(apiMessages.map(m => m.text.trim()));
-    const visiblePending = pendingLocal.filter(p => !confirmedTexts.has(p.text.trim()));
+    // const confirmedTexts = new Set(apiMessages.map(m => m.text.trim()));
+    // const visiblePending = pendingLocal.filter(p => !confirmedTexts.has(p.text.trim()));
+    const visiblePending = pendingLocal.filter(p => {
+  return !apiMessages.some(api =>
+    api.text.trim() === p.text.trim() &&
+    Math.abs(new Date(api.timestamp) - new Date(p.timestamp)) < 5000
+  );
+});
 
     const combined = [...apiMessages, ...visiblePending]
       .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -738,8 +744,9 @@ if (updated) {
         msgInput.value = '';
         document.getElementById('charText').textContent = '0 / 1600';
         document.getElementById('charFill').style.width = '0%';
-        setTimeout(loadMessages, 2000);
-        setTimeout(loadMessages, 5000);
+        // setTimeout(loadMessages, 2000);
+        // setTimeout(loadMessages, 5000);
+        loadMessages(); // immediately sync
       } else {
         pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
         render();
