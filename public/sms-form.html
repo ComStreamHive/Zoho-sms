@@ -36,12 +36,12 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
 
-    body {
-      font-family: 'Figtree', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-    }
+ .body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
     .app { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; }
 
@@ -79,12 +79,65 @@
     }
     @keyframes livepulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
 
-    /* BODY */
-    .body {
-      flex: 1; display: grid;
-      grid-template-columns: 380px 1fr;
-      overflow: hidden; min-height: 0;
-    }
+    
+
+    /* WhatsApp-style bottom input */
+.chat-input-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+
+  align-items: center; /* 🔥 CHANGE THIS */
+}
+
+.chat-input-bar textarea {
+  flex: 1;
+  max-height: 120px;
+  min-height: 42px;
+  padding: 10px 14px;
+
+  display: flex;
+  align-items: center; /* keeps text centered */
+
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  resize: none;
+  font-family: 'Figtree', sans-serif;
+  font-size: 14px;
+  outline: none;
+  background: var(--surface);
+}
+
+.chat-input-bar textarea:focus {
+  border-color: var(--accent);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.send-fab {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(37,99,235,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-fab:disabled {
+  opacity: 0.5;
+}
 
     /* LEFT PANEL */
     .left-panel {
@@ -186,7 +239,13 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* RIGHT PANEL */
-    .right-panel { display: flex; flex-direction: column; background: var(--bg); overflow: hidden; min-height: 0; }
+    .right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  width: 100%;
+}
     .chat-topbar {
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: space-between;
@@ -282,6 +341,26 @@
       border: 3px solid var(--border); border-top-color: var(--accent);
       border-radius: 50%; animation: spin 0.7s linear infinite;
     }
+    .messages-scroll {
+  padding: 20px;
+  padding-bottom: 80px; /* important */
+}
+.chat-topbar-left .recipient-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-topbar-left .rname {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.chat-topbar-left .rphone {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
   </style>
 </head>
 <body>
@@ -303,7 +382,7 @@
   <div class="body">
 
     <!-- LEFT -->
-    <div class="left-panel">
+    <!-- <div class="left-panel">
       <div class="recipient-wrap" id="recipientWrap" style="display:none">
         <div class="section-label">Sending To</div>
         <div class="recipient-card">
@@ -332,11 +411,11 @@
           <span id="sendLabel">Send Message ↑</span>
         </button>
       </div>
-    </div>
+    </div> -->
 
     <!-- RIGHT -->
     <div class="right-panel">
-      <div class="chat-topbar">
+      <!-- <div class="chat-topbar">
         <div class="chat-topbar-left">
           <span class="chat-title">Conversation History</span>
           <span class="count-chip" id="countChip">0</span>
@@ -345,7 +424,26 @@
           <span class="updated-text" id="updatedText"></span>
           <div class="icon-btn" onclick="loadMessages()" title="Refresh">↻</div>
         </div>
-      </div>
+      </div> -->
+
+      <div class="chat-topbar">
+
+  <div class="chat-topbar-left">
+    <div class="avatar" id="avatarEl">?</div>
+
+    <div class="recipient-info">
+      <div class="rname" id="rname"></div>
+      <div class="rphone" id="rphone"></div>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+     
+    <div class="icon-btn" onclick="loadMessages()" title="Refresh">↻</div>
+    <div class="icon-btn" onclick="goBack()" title="Close">✕</div>
+  </div>
+
+</div>
       <div class="messages-scroll" id="msgScroll">
         <div class="state-box">
           <div class="big-spin"></div>
@@ -353,6 +451,15 @@
         </div>
       </div>
     </div>
+
+    <!-- BOTTOM INPUT BAR (WhatsApp style) -->
+<div class="chat-input-bar">
+  <textarea id="msgInput" placeholder="Type a message..." maxlength="1600"></textarea>
+
+  <button class="send-fab" id="sendBtn" onclick="sendSMS()">
+    <span id="sendLabel">➤</span>
+  </button>
+</div>
 
   </div>
 </div>
@@ -442,6 +549,15 @@
     el.scrollTop = el.scrollHeight;
   }
 
+// closing
+  function goBack() {
+  if (document.referrer) {
+    history.back();
+  } else {
+    // fallback if no history (important)
+    window.location.href = "/";
+  }
+}
   // ── Render ─────────────────────────────────────────────────────────────────
   function render() {
     const scroll  = document.getElementById('msgScroll');
