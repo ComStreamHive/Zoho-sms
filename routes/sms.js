@@ -1,6 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const axios   = require('axios');
+const auth = require('../middleware/auth');
 
 const NS_CONFIG = {
   baseUrl:     process.env.NETSAPIENS_API_URL,
@@ -65,7 +66,7 @@ function isDuplicate(allMessages, msg, direction) {
 }
 
 // ── GET /api/sms/history/:phone ───────────────────────────
-router.get('/history/:phone', async (req, res) => {
+router.get('/history/:phone', auth, async (req, res) => {
   const phone       = req.params.phone;
   const cleanPhone_ = cleanPhone(phone);
   const ourNumber   = cleanPhone(NS_CONFIG.fromNumber);
@@ -166,7 +167,7 @@ router.get('/history/:phone', async (req, res) => {
 });
 
 // ── POST /api/sms/send ────────────────────────────────────
-router.post('/send', async (req, res) => {
+router.post('/send', auth, async (req, res) => {
   const { phone, message } = req.body;
   if (!phone || !message) {
     return res.status(400).json({ success: false, error: 'Phone and message required' });
@@ -200,7 +201,7 @@ router.post('/send', async (req, res) => {
 
 // ── GET /api/sms/new-messages ─────────────────────────────
 // Used by Chrome extension to poll for new inbound messages
-router.get('/new-messages', async (req, res) => {
+router.get('/new-messages', auth, async (req, res) => {
   const since     = req.query.since;
   const sinceDate = since ? new Date(since) : new Date(Date.now() - 60000);
   const ourNumber = cleanPhone(NS_CONFIG.fromNumber);

@@ -129,19 +129,41 @@ app.get('/sms-form.html', (req, res) => {
 // /new-messages  →  Chrome extension background worker (identified by x-extension-key header)
 // /history       →  sms-form.html page (same-origin referer: zohosms.streamtechnologies.in)
 // /send          →  sms-form.html page (same-origin referer: zohosms.streamtechnologies.in)
+// app.use('/api/sms', (req, res, next) => {
+//     // Chrome extension polling — identified by custom header
+//     if (req.path === '/new-messages' &&
+//         req.headers['x-extension-key'] === 'zoho-sms-ext-2024') {
+//         return next();
+//     }
+
+//     // sms-form.html makes relative fetch() calls — browser sets referer to page origin
+//     const referer = req.headers.referer || '';
+//     if (referer.includes('zohosms.streamtechnologies.in')) return next();
+
+//     // Zoho CRM domains
+//     requireZohoOrigin(req, res, next);
+// }, require('./routes/sms'));
+
 app.use('/api/sms', (req, res, next) => {
-    // Chrome extension polling — identified by custom header
+
+    // ✅ Extension
     if (req.path === '/new-messages' &&
         req.headers['x-extension-key'] === 'zoho-sms-ext-2024') {
         return next();
     }
 
-    // sms-form.html makes relative fetch() calls — browser sets referer to page origin
+    // ✅ Zoho page
     const referer = req.headers.referer || '';
     if (referer.includes('zohosms.streamtechnologies.in')) return next();
 
-    // Zoho CRM domains
+    // ✅ NEW: Allow JWT users
+    if (req.headers['authorization']) {
+        return next();
+    }
+
+    // ❌ Block others
     requireZohoOrigin(req, res, next);
+
 }, require('./routes/sms'));
 
 // ── Static files ──────────────────────────────────────────────────────────────
