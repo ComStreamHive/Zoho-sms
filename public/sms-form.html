@@ -488,13 +488,32 @@
   let isLoading    = false;
 
   // ── Setup recipient ────────────────────────────────────────────────────────
-  if (phone) {
-    const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
-    document.getElementById('avatarEl').textContent        = init || '?';
-    document.getElementById('rname').textContent           = name;
-    document.getElementById('rphone').textContent          = fmtPhone(phone);
-    document.getElementById('recipientWrap').style.display = 'block';
+  // if (phone) {
+  //   const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
+  //   document.getElementById('avatarEl').textContent        = init || '?';
+  //   document.getElementById('rname').textContent           = name;
+  //   document.getElementById('rphone').textContent          = fmtPhone(phone);
+  //   document.getElementById('recipientWrap').style.display = 'block';
+  // }
+
+  // ── Setup recipient ────────────────────────────────────────────────────────
+if (phone) {
+  const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
+
+  const avatar = document.getElementById('avatarEl');
+  const rnameEl = document.getElementById('rname');
+  const rphoneEl = document.getElementById('rphone');
+  const wrap = document.getElementById('recipientWrap');
+
+  if (avatar) avatar.textContent = init || '?';
+  if (rnameEl) rnameEl.textContent = name;
+  if (rphoneEl) rphoneEl.textContent = fmtPhone(phone);
+
+  // 🔥 FIX HERE
+  if (wrap) {
+    wrap.style.display = 'block';
   }
+}
 
   // ── Char counter ───────────────────────────────────────────────────────────
   const msgInput = document.getElementById('msgInput');
@@ -605,7 +624,11 @@
       scroll.appendChild(row);
     });
 
-    document.getElementById('countChip').textContent = apiMessages.length;
+    // document.getElementById('countChip').textContent = apiMessages.length;
+    const chip = document.getElementById('countChip');
+if (chip) {
+  chip.textContent = apiMessages.length;
+}
     if (wasNear || isFirstLoad) scrollDown();
   }
 
