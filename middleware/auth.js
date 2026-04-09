@@ -3,15 +3,15 @@ const jwt = require('jsonwebtoken');
 module.exports = function (req, res, next) {
     console.log("🔐 AUTH MIDDLEWARE HIT");
 
-    const extensionKey = req.headers['x-extension-key'];
-    const queryKey = req.query.key;
-    const referer = req.headers.referer || '';
+    // const extensionKey = req.headers['x-extension-key'];
+    // const queryKey = req.query.key;
+    // const referer = req.headers.referer || '';
 
-    console.log({
-        extensionKey,
-        queryKey,
-        authHeader: req.headers['authorization']
-    });
+    // console.log({
+    //     extensionKey,
+    //     queryKey,
+    //     authHeader: req.headers['authorization']
+    // });
 
     // ✅ 1. Allow Chrome Extension
     if (extensionKey === 'zoho-sms-ext-2024') {
@@ -46,7 +46,7 @@ module.exports = function (req, res, next) {
     // console.log("✅ JWT valid:", decoded);
     next();
 } catch (err) {
-    console.log("❌ JWT ERROR:", err.message);
+    // console.log("❌ JWT ERROR:", err.message);
     return res.status(403).json({ success: false, message: err.message });
 }
 };
