@@ -518,15 +518,22 @@ if (phone) {
   // ── Char counter ───────────────────────────────────────────────────────────
   const msgInput = document.getElementById('msgInput');
   msgInput.oninput = () => {
-    const len  = msgInput.value.length;
-    const pct  = (len / 1600) * 100;
-    const fill = document.getElementById('charFill');
-    const txt  = document.getElementById('charText');
-    fill.style.width      = pct + '%';
+  const len  = msgInput.value.length;
+  const pct  = (len / 1600) * 100;
+
+  const fill = document.getElementById('charFill');
+  const txt  = document.getElementById('charText');
+
+  if (fill) {
+    fill.style.width = pct + '%';
     fill.style.background = len > 1400 ? '#dc2626' : len > 1200 ? '#d97706' : '#2563eb';
-    txt.textContent       = `${len} / 1600`;
-    txt.className         = 'char-text' + (len > 1400 ? ' danger' : len > 1200 ? ' warn' : '');
-  };
+  }
+
+  if (txt) {
+    txt.textContent = `${len} / 1600`;
+    txt.className = 'char-text' + (len > 1400 ? ' danger' : len > 1200 ? ' warn' : '');
+  }
+};
 
   // ── Utilities ──────────────────────────────────────────────────────────────
   function fmtPhone(p) {
@@ -648,8 +655,16 @@ if (chip) {
           apiMessages = data.messages;
           render();
         }
-        document.getElementById('updatedText').textContent =
-          'Updated ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        // document.getElementById('updatedText').textContent =
+        //   'Updated ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        const updated = document.getElementById('updatedText');
+if (updated) {
+  updated.textContent =
+    'Updated ' + new Date().toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+}
       } else if (isFirstLoad) {
         document.getElementById('msgScroll').innerHTML = `
           <div class="state-box">
@@ -722,17 +737,22 @@ if (chip) {
       showStatus('error', err.message);
     } finally {
       btn.disabled    = false;
-      label.innerHTML = 'Send Message ↑';
+      label.innerHTML = '➤';
       msgInput.focus();
     }
   }
 
   function showStatus(type, msg) {
-    const area = document.getElementById('statusArea');
-    const icon = type === 'success' ? '✓' : '✕';
-    area.innerHTML = `<div class="status-pill ${type}">${icon} ${msg}</div>`;
-    if (type === 'success') setTimeout(() => { area.innerHTML = ''; }, 3000);
+  const area = document.getElementById('statusArea');
+  if (!area) return; // 🔥 IMPORTANT
+
+  const icon = type === 'success' ? '✓' : '✕';
+  area.innerHTML = `<div class="status-pill ${type}">${icon} ${msg}</div>`;
+
+  if (type === 'success') {
+    setTimeout(() => { area.innerHTML = ''; }, 3000);
   }
+}
 
   // ── Boot ───────────────────────────────────────────────────────────────────
   if (phone) loadMessages();
