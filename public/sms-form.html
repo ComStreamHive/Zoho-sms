@@ -245,6 +245,7 @@
   flex-direction: column;
   background: var(--bg);
   width: 100%;
+ 
 }
     .chat-topbar {
       flex-shrink: 0;
@@ -360,6 +361,19 @@
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 2px;
+}
+/* 🔥 FIX SCROLL ISSUE */
+.body {
+  min-height: 0;
+}
+
+.right-panel {
+  min-height: 0;
+}
+
+.messages-scroll {
+  min-height: 0;
+  overflow-y: auto;
 }
   </style>
 </head>
