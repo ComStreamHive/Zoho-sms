@@ -744,9 +744,9 @@ if (updated) {
         msgInput.value = '';
         document.getElementById('charText').textContent = '0 / 1600';
         document.getElementById('charFill').style.width = '0%';
-        // setTimeout(loadMessages, 2000);
-        // setTimeout(loadMessages, 5000);
-        loadMessages(); // immediately sync
+        setTimeout(loadMessages, 2000);
+        setTimeout(loadMessages, 5000);
+        
       } else {
         pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
         render();
