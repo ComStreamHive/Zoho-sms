@@ -5,376 +5,320 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SMS Conversation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg:           #f0f2f5;
-      --white:        #ffffff;
-      --surface:      #f8f9fb;
-      --border:       #e4e7ec;
-      --border-hi:    #c9d0db;
-      --accent:       #2563eb;
-      --accent-light: #eff4ff;
-      --accent-mid:   #bfcffe;
-      --accent-hover: #1d4ed8;
-      --green:        #059669;
-      --green-light:  #ecfdf5;
-      --red:          #dc2626;
-      --red-light:    #fef2f2;
-      --amber:        #d97706;
-      --text:         #111827;
-      --text-sub:     #374151;
-      --text-muted:   #6b7280;
-      --text-faint:   #9ca3af;
-      --radius:       12px;
-      --radius-sm:    8px;
-      --radius-xs:    6px;
-      --shadow-sm:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-      --shadow:       0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
-    }
-
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; width: 100%; overflow: hidden; }
 
- .body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f5;
+      color: #111;
+      font-size: 14px;
+    }
 
-    .app { display: flex; flex-direction: column; height: 100vh; width: 100vw; overflow: hidden; }
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      background: #fff;
+    }
 
-    /* HEADER */
+    /* ── TOP HEADER ── */
     .header {
       flex-shrink: 0;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px; height: 60px;
-      background: var(--white);
-      border-bottom: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      height: 64px;
+      background: #fff;
+      border-bottom: 1px solid #ebebeb;
     }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .header-logo {
-      width: 36px; height: 36px;
-      background: var(--accent); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 17px;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.3); flex-shrink: 0;
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .header-text h1 { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.2px; }
-    .header-text p  { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-    .live-badge {
-      display: flex; align-items: center; gap: 5px;
-      padding: 5px 10px;
-      background: var(--green-light);
-      border: 1px solid #a7f3d0; border-radius: 20px;
-      font-size: 11px; font-weight: 600; color: var(--green);
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #1a73e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .contact-info .cname {
+      font-size: 15px;
+      font-weight: 600;
+      color: #111;
+      line-height: 1.2;
+    }
+
+    .contact-info .cphone {
+      font-size: 12px;
+      color: #888;
+      margin-top: 1px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: transparent;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #555;
+      font-size: 18px;
+      transition: background 0.15s;
+    }
+    .icon-btn:hover { background: #f0f0f0; }
+
+    .live-dot-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #34a853;
+      background: #e8f5e9;
+      padding: 4px 10px;
+      border-radius: 20px;
     }
     .live-dot {
-      width: 6px; height: 6px;
-      background: var(--green); border-radius: 50%;
+      width: 6px;
+      height: 6px;
+      background: #34a853;
+      border-radius: 50%;
       animation: livepulse 2s ease-in-out infinite;
     }
-    @keyframes livepulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+    @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-    
-
-    /* WhatsApp-style bottom input */
-.chat-input-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  gap: 10px;
-  padding: 10px 14px;
-  background: var(--white);
-  border-top: 1px solid var(--border);
-
-  align-items: center; /* 🔥 CHANGE THIS */
-}
-
-.chat-input-bar textarea {
-  flex: 1;
-  max-height: 120px;
-  min-height: 42px;
-  padding: 10px 14px;
-
-  display: flex;
-  align-items: center; /* keeps text centered */
-
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  resize: none;
-  font-family: 'Figtree', sans-serif;
-  font-size: 14px;
-  outline: none;
-  background: var(--surface);
-}
-
-.chat-input-bar textarea:focus {
-  border-color: var(--accent);
-  background: var(--white);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-}
-
-.send-fab {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: none;
-  background: var(--accent);
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
-  box-shadow: 0 3px 10px rgba(37,99,235,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.send-fab:disabled {
-  opacity: 0.5;
-}
-
-    /* LEFT PANEL */
-    .left-panel {
-      display: flex; flex-direction: column;
-      background: var(--white);
-      border-right: 1px solid var(--border);
-      overflow: hidden; min-height: 0;
-    }
-    .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-faint); }
-
-    .recipient-wrap { padding: 18px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    .recipient-card {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px;
-      background: var(--accent-light);
-      border: 1px solid var(--accent-mid); border-radius: var(--radius-sm);
-      margin-top: 10px;
-    }
-    .avatar {
-      width: 38px; height: 38px;
-      background: var(--accent); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 14px; font-weight: 700; flex-shrink: 0;
-    }
-    .recipient-info .rname  { font-size: 14px; font-weight: 600; color: var(--text); }
-    .recipient-info .rphone { font-size: 12px; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
-
-    .compose-wrap {
-      flex: 1; display: flex; flex-direction: column;
-      padding: 18px 20px; gap: 10px;
-      overflow: hidden; min-height: 0;
-    }
-    textarea {
-      flex: 1; width: 100%;
-      padding: 12px 14px;
-      background: var(--surface);
-      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-      color: var(--text);
-      font-family: 'Figtree', sans-serif;
-      font-size: 14px; line-height: 1.6;
-      resize: none; outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
-      min-height: 0;
-    }
-    textarea::placeholder { color: var(--text-faint); }
-    textarea:focus {
-      border-color: var(--accent);
-      background: var(--white);
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-    }
-
-    .char-row { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    .char-track { flex: 1; height: 3px; background: var(--border); border-radius: 3px; overflow: hidden; }
-    .char-fill  { height: 100%; width: 0%; background: var(--accent); border-radius: 3px; transition: width 0.15s, background 0.15s; }
-    .char-text  { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-faint); white-space: nowrap; }
-    .char-text.warn   { color: var(--amber); }
-    .char-text.danger { color: var(--red); font-weight: 600; }
-
-    .status-area { padding: 0 20px; flex-shrink: 0; min-height: 36px; }
-    .status-pill {
-      display: flex; align-items: center; gap: 7px;
-      padding: 8px 12px; border-radius: var(--radius-xs);
-      font-size: 13px; font-weight: 500;
-      animation: fadeIn 0.2s ease;
-    }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
-    .status-pill.success { background: var(--green-light); color: var(--green); border: 1px solid #a7f3d0; }
-    .status-pill.error   { background: var(--red-light);   color: var(--red);   border: 1px solid #fecaca; }
-
-    .action-row {
-      display: flex; gap: 8px;
-      padding: 14px 20px;
-      border-top: 1px solid var(--border); flex-shrink: 0;
-    }
-    .btn {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 9px 18px; border-radius: var(--radius-xs);
-      font-size: 13px; font-weight: 600;
-      font-family: 'Figtree', sans-serif;
-      cursor: pointer; border: none;
-      transition: all 0.15s; white-space: nowrap;
-    }
-    .btn-close { background: var(--surface); color: var(--text-muted); border: 1px solid var(--border); }
-    .btn-close:hover { background: var(--border); color: var(--text-sub); }
-    .btn-send {
+    /* ── MESSAGES ── */
+    .messages-wrap {
       flex: 1;
-      background: var(--accent); color: white;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.25);
-    }
-    .btn-send:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,99,235,0.35); }
-    .btn-send:active:not(:disabled) { transform: translateY(0); }
-    .btn-send:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
-    .spin {
-      width: 13px; height: 13px;
-      border: 2px solid rgba(255,255,255,0.35);
-      border-top-color: white; border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* RIGHT PANEL */
-    .right-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  width: 100%;
- 
-}
-    .chat-topbar {
-      flex-shrink: 0;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 20px;
-      background: var(--white); border-bottom: 1px solid var(--border);
-    }
-    .chat-topbar-left { display: flex; align-items: center; gap: 10px; }
-    .chat-title { font-size: 14px; font-weight: 700; color: var(--text); }
-    .count-chip {
-      padding: 2px 8px;
-      background: var(--accent-light); color: var(--accent);
-      border-radius: 20px; font-size: 11px; font-weight: 700;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .topbar-right { display: flex; align-items: center; gap: 10px; }
-    .updated-text { font-size: 11px; color: var(--text-faint); }
-    .icon-btn {
-      width: 30px; height: 30px;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-xs); cursor: pointer;
-      font-size: 14px; color: var(--text-muted); transition: all 0.15s;
-    }
-    .icon-btn:hover { background: var(--border); color: var(--text); }
-
-    .messages-scroll {
-      flex: 1; overflow-y: auto; overflow-x: hidden;
-      padding: 20px;
-      display: flex; flex-direction: column; gap: 2px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px 16px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: #f9f9f9;
       min-height: 0;
     }
-    .messages-scroll::-webkit-scrollbar { width: 5px; }
-    .messages-scroll::-webkit-scrollbar-track { background: transparent; }
-    .messages-scroll::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 5px; }
+    .messages-wrap::-webkit-scrollbar { width: 4px; }
+    .messages-wrap::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
 
-    .divider { display: flex; align-items: center; gap: 10px; margin: 14px 0 8px; }
-    .divider-line { flex: 1; height: 1px; background: var(--border); }
-    .divider-label { font-size: 11px; font-weight: 600; color: var(--text-faint); white-space: nowrap; }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0 6px;
+    }
+    .divider-line { flex: 1; height: 1px; background: #e0e0e0; }
+    .divider-label { font-size: 11px; color: #aaa; font-weight: 500; white-space: nowrap; }
 
-    .msg-row { display: flex; margin-bottom: 3px; animation: msgpop 0.2s ease; }
-    @keyframes msgpop { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .msg-row { display: flex; margin-bottom: 2px; animation: pop 0.18s ease; }
+    @keyframes pop { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
 
+    /* outbound = left (from this app/you) */
     .msg-row.outbound { justify-content: flex-start; }
     .msg-row.outbound .bubble {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-bottom-left-radius: 3px;
-      color: var(--text);
-      box-shadow: var(--shadow-sm);
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-bottom-left-radius: 4px;
+      color: #111;
     }
+
+    /* inbound = right (from customer) */
     .msg-row.inbound { justify-content: flex-end; }
     .msg-row.inbound .bubble {
-      background: var(--accent);
-      border-bottom-right-radius: 3px;
-      color: white;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.2);
+      background: #1a73e8;
+      border-bottom-right-radius: 4px;
+      color: #fff;
     }
+
     .msg-row.sending { justify-content: flex-start; opacity: 0.6; }
     .msg-row.sending .bubble {
-      background: var(--white);
-      border: 1px dashed var(--border-hi);
-      border-bottom-left-radius: 3px;
-      color: var(--text-muted);
+      background: #fff;
+      border: 1px dashed #ccc;
+      border-bottom-left-radius: 4px;
+      color: #999;
     }
 
     .bubble {
-      max-width: 64%; padding: 9px 13px 7px; border-radius: 12px;
-      font-size: 14px; line-height: 1.55;
-      word-wrap: break-word; overflow-wrap: break-word;
+      max-width: 70%;
+      padding: 8px 12px 6px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      word-wrap: break-word;
     }
-    .b-from { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; opacity: 0.55; }
+
+    .b-from {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 2px;
+      opacity: 0.5;
+    }
+
     .b-text { white-space: pre-wrap; word-break: break-word; }
-    .b-time { font-size: 10px; font-family: 'JetBrains Mono', monospace; opacity: 0.5; margin-top: 5px; }
+
+    .b-time {
+      font-size: 10px;
+      opacity: 0.45;
+      margin-top: 4px;
+    }
     .msg-row.outbound .b-time, .msg-row.sending .b-time { text-align: left; }
-    .msg-row.inbound  .b-time { text-align: right; }
+    .msg-row.inbound .b-time { text-align: right; }
 
+    /* state boxes */
     .state-box {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 14px; padding: 40px 20px; text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 40px 20px;
+      text-align: center;
     }
-    .state-icon {
-      width: 52px; height: 52px;
-      background: var(--white); border: 1px solid var(--border);
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; box-shadow: var(--shadow-sm);
-    }
-    .state-box h3 { font-size: 15px; font-weight: 700; color: var(--text-sub); }
-    .state-box p  { font-size: 13px; color: var(--text-muted); max-width: 240px; }
+    .state-icon { font-size: 32px; }
+    .state-box h3 { font-size: 15px; font-weight: 600; color: #444; }
+    .state-box p  { font-size: 13px; color: #999; max-width: 220px; }
     .big-spin {
-      width: 26px; height: 26px;
-      border: 3px solid var(--border); border-top-color: var(--accent);
-      border-radius: 50%; animation: spin 0.7s linear infinite;
+      width: 28px;
+      height: 28px;
+      border: 2.5px solid #e0e0e0;
+      border-top-color: #1a73e8;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
     }
-    .messages-scroll {
-  padding: 20px;
-  padding-bottom: 80px; /* important */
-}
-.chat-topbar-left .recipient-info {
-  display: flex;
-  flex-direction: column;
-}
+    @keyframes spin { to{transform:rotate(360deg)} }
 
-.chat-topbar-left .rname {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
+    /* ── STATUS BAR ── */
+    .status-bar {
+      flex-shrink: 0;
+      min-height: 0;
+      padding: 0 16px;
+    }
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      margin: 4px 0;
+      animation: fadeUp 0.2s ease;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+    .status-pill.success { background: #e8f5e9; color: #2e7d32; }
+    .status-pill.error   { background: #fce8e6; color: #c62828; }
 
-.chat-topbar-left .rphone {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-/* 🔥 FIX SCROLL ISSUE */
-.body {
-  min-height: 0;
-}
+    /* ── BOTTOM INPUT BAR ── */
+    .input-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 10px 12px;
+      background: #fff;
+      border-top: 1px solid #ebebeb;
+    }
 
-.right-panel {
-  min-height: 0;
-}
+    .input-bar textarea {
+      flex: 1;
+      resize: none;
+      border: 1px solid #e0e0e0;
+      border-radius: 22px;
+      padding: 10px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #111;
+      background: #f7f7f7;
+      outline: none;
+      max-height: 120px;
+      min-height: 40px;
+      overflow-y: auto;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .input-bar textarea::placeholder { color: #aaa; }
+    .input-bar textarea:focus {
+      border-color: #1a73e8;
+      background: #fff;
+    }
 
-.messages-scroll {
-  min-height: 0;
-  overflow-y: auto;
-}
+    .send-btn {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #1a73e8;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      color: #fff;
+    }
+    .send-btn:hover:not(:disabled) { background: #1558b0; }
+    .send-btn:active:not(:disabled) { transform: scale(0.94); }
+    .send-btn:disabled { background: #b0c8f5; cursor: not-allowed; }
+
+    /* send icon */
+    .send-icon {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .spin-sm {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    /* char counter small */
+    .char-hint {
+      font-size: 10px;
+      color: #bbb;
+      text-align: right;
+      padding: 0 16px 4px;
+      flex-shrink: 0;
+    }
+    .char-hint.warn   { color: #f59e0b; }
+    .char-hint.danger { color: #dc2626; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -383,106 +327,63 @@
   <!-- HEADER -->
   <div class="header">
     <div class="header-left">
-      <div class="header-logo">💬</div>
-      <div class="header-text">
-        <h1>SMS Conversation</h1>
-        <p>ZOHO</p>
+      <div class="avatar" id="avatarEl">?</div>
+      <div class="contact-info">
+        <div class="cname"  id="rname">Customer</div>
+        <div class="cphone" id="rphone"></div>
       </div>
     </div>
-    <div class="live-badge"><span class="live-dot"></span>Live</div>
-  </div>
-
-  <!-- BODY -->
-  <div class="body">
-
-    <!-- LEFT -->
-    <!-- <div class="left-panel">
-      <div class="recipient-wrap" id="recipientWrap" style="display:none">
-        <div class="section-label">Sending To</div>
-        <div class="recipient-card">
-          <div class="avatar" id="avatarEl">?</div>
-          <div class="recipient-info">
-            <div class="rname"  id="rname"></div>
-            <div class="rphone" id="rphone"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="compose-wrap">
-        <div class="section-label">New Message</div>
-        <textarea id="msgInput" placeholder="Type your message…&#10;&#10;Enter to send · Shift+Enter for new line" maxlength="1600"></textarea>
-        <div class="char-row">
-          <div class="char-track"><div class="char-fill" id="charFill"></div></div>
-          <span class="char-text" id="charText">0 / 1600</span>
-        </div>
-      </div>
-
-      <div class="status-area" id="statusArea"></div>
-
-      <div class="action-row">
-        <button class="btn btn-close" onclick="history.back()">✕ Close</button>
-        <button class="btn btn-send" id="sendBtn" onclick="sendSMS()">
-          <span id="sendLabel">Send Message ↑</span>
-        </button>
-      </div>
-    </div> -->
-
-    <!-- RIGHT -->
-    <div class="right-panel">
-      <!-- <div class="chat-topbar">
-        <div class="chat-topbar-left">
-          <span class="chat-title">Conversation History</span>
-          <span class="count-chip" id="countChip">0</span>
-        </div>
-        <div class="topbar-right">
-          <span class="updated-text" id="updatedText"></span>
-          <div class="icon-btn" onclick="loadMessages()" title="Refresh">↻</div>
-        </div>
-      </div> -->
-
-      <div class="chat-topbar">
-
-  <div class="chat-topbar-left">
-    <div class="avatar" id="avatarEl">?</div>
-
-    <div class="recipient-info">
-      <div class="rname" id="rname"></div>
-      <div class="rphone" id="rphone"></div>
+    <div class="header-right">
+      <div class="live-dot-wrap"><span class="live-dot"></span>Live</div>
+      <button class="icon-btn" onclick="loadMessages()" title="Refresh">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l5.36 4.36A9 9 0 0020.49 15"/>
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="window.close()" title="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
     </div>
   </div>
 
-  <div class="topbar-right">
-     
-    <div class="icon-btn" onclick="loadMessages()" title="Refresh">↻</div>
-    <div class="icon-btn" onclick="goBack()" title="Close">✕</div>
-  </div>
-
-</div>
-      <div class="messages-scroll" id="msgScroll">
-        <div class="state-box">
-          <div class="big-spin"></div>
-          <p>Loading conversation…</p>
-        </div>
-      </div>
+  <!-- MESSAGES -->
+  <div class="messages-wrap" id="msgScroll">
+    <div class="state-box">
+      <div class="big-spin"></div>
+      <p>Loading conversation…</p>
     </div>
-
-    <!-- BOTTOM INPUT BAR (WhatsApp style) -->
-<div class="chat-input-bar">
-  <textarea id="msgInput" placeholder="Type a message..." maxlength="1600"></textarea>
-
-  <button class="send-fab" id="sendBtn" onclick="sendSMS()">
-    <span id="sendLabel">➤</span>
-  </button>
-</div>
-
   </div>
+
+  <!-- STATUS -->
+  <div class="status-bar" id="statusArea"></div>
+
+  <!-- CHAR HINT -->
+  <div class="char-hint" id="charHint"></div>
+
+  <!-- INPUT BAR -->
+  <div class="input-bar">
+    <textarea
+      id="msgInput"
+      placeholder="Type a message…"
+      maxlength="1600"
+      rows="1"
+    ></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendSMS()">
+      <span id="sendIcon">
+        <svg class="send-icon" viewBox="0 0 24 24">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </span>
+    </button>
+  </div>
+
 </div>
 
 <script>
-  // ── Strip ?key from URL immediately so it cannot be copied and reused ────────
-  // Must run before anything else — removes the key from the address bar
-  // without reloading the page. If someone copies the URL after this point
-  // they get no key param → server rejects with 403 Access Denied.
   (function () {
     const url = new URL(window.location.href);
     if (url.searchParams.has('key')) {
@@ -495,61 +396,36 @@
   const phone  = params.get('phone') || '';
   const name   = params.get('name')  || 'Customer';
 
-  // ── State ──────────────────────────────────────────────────────────────────
   let apiMessages  = [];
   let pendingLocal = [];
   let isFirstLoad  = true;
   let isLoading    = false;
 
-  // ── Setup recipient ────────────────────────────────────────────────────────
-  // if (phone) {
-  //   const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
-  //   document.getElementById('avatarEl').textContent        = init || '?';
-  //   document.getElementById('rname').textContent           = name;
-  //   document.getElementById('rphone').textContent          = fmtPhone(phone);
-  //   document.getElementById('recipientWrap').style.display = 'block';
-  // }
-
-  // ── Setup recipient ────────────────────────────────────────────────────────
-if (phone) {
-  const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
-
-  const avatar = document.getElementById('avatarEl');
-  const rnameEl = document.getElementById('rname');
-  const rphoneEl = document.getElementById('rphone');
-  const wrap = document.getElementById('recipientWrap');
-
-  if (avatar) avatar.textContent = init || '?';
-  if (rnameEl) rnameEl.textContent = name;
-  if (rphoneEl) rphoneEl.textContent = fmtPhone(phone);
-
-  // 🔥 FIX HERE
-  if (wrap) {
-    wrap.style.display = 'block';
+  // Setup recipient
+  if (phone) {
+    const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
+    document.getElementById('avatarEl').textContent = init || '?';
+    document.getElementById('rname').textContent    = name;
+    document.getElementById('rphone').textContent   = fmtPhone(phone);
   }
-}
 
-  // ── Char counter ───────────────────────────────────────────────────────────
+  // Auto-grow textarea
   const msgInput = document.getElementById('msgInput');
-  msgInput.oninput = () => {
-  const len  = msgInput.value.length;
-  const pct  = (len / 1600) * 100;
+  msgInput.addEventListener('input', () => {
+    msgInput.style.height = 'auto';
+    msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
 
-  const fill = document.getElementById('charFill');
-  const txt  = document.getElementById('charText');
+    const len  = msgInput.value.length;
+    const hint = document.getElementById('charHint');
+    if (len > 1200) {
+      hint.textContent = `${len} / 1600`;
+      hint.className   = 'char-hint' + (len > 1400 ? ' danger' : ' warn');
+    } else {
+      hint.textContent = '';
+      hint.className   = 'char-hint';
+    }
+  });
 
-  if (fill) {
-    fill.style.width = pct + '%';
-    fill.style.background = len > 1400 ? '#dc2626' : len > 1200 ? '#d97706' : '#2563eb';
-  }
-
-  if (txt) {
-    txt.textContent = `${len} / 1600`;
-    txt.className = 'char-text' + (len > 1400 ? ' danger' : len > 1200 ? ' warn' : '');
-  }
-};
-
-  // ── Utilities ──────────────────────────────────────────────────────────────
   function fmtPhone(p) {
     const c = p.replace(/\D/g, '');
     return c.length === 10 ? `(${c.substr(0,3)}) ${c.substr(3,3)}-${c.substr(6,4)}` : p;
@@ -589,29 +465,13 @@ if (phone) {
     el.scrollTop = el.scrollHeight;
   }
 
-// closing
-  function goBack() {
-  if (document.referrer) {
-    history.back();
-  } else {
-    // fallback if no history (important)
-    window.location.href = "/";
-  }
-}
-  // ── Render ─────────────────────────────────────────────────────────────────
   function render() {
     const scroll  = document.getElementById('msgScroll');
     const wasNear = nearBottom();
     scroll.innerHTML = '';
 
-    // const confirmedTexts = new Set(apiMessages.map(m => m.text.trim()));
-    // const visiblePending = pendingLocal.filter(p => !confirmedTexts.has(p.text.trim()));
-    const visiblePending = pendingLocal.filter(p => {
-  return !apiMessages.some(api =>
-    api.text.trim() === p.text.trim() &&
-    Math.abs(new Date(api.timestamp) - new Date(p.timestamp)) < 5000
-  );
-});
+    const confirmedTexts = new Set(apiMessages.map(m => m.text.trim()));
+    const visiblePending = pendingLocal.filter(p => !confirmedTexts.has(p.text.trim()));
 
     const combined = [...apiMessages, ...visiblePending]
       .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -638,8 +498,7 @@ if (phone) {
       }
 
       const row    = document.createElement('div');
-      // const cls    = msg.source === 'local' ? 'sending' : msg.direction;
-      const cls = msg.source === 'local' ? 'sending' : (msg.source === 'sent' ? 'outbound' : msg.direction);
+      const cls    = msg.source === 'local' ? 'sending' : msg.direction;
       row.className = `msg-row ${cls}`;
       const sender  = msg.direction === 'outbound' || msg.source === 'local' ? 'You' : name;
 
@@ -652,215 +511,109 @@ if (phone) {
       scroll.appendChild(row);
     });
 
-    // document.getElementById('countChip').textContent = apiMessages.length;
-    const chip = document.getElementById('countChip');
-if (chip) {
-  chip.textContent = apiMessages.length;
-}
     if (wasNear || isFirstLoad) scrollDown();
   }
 
-  // ── Load messages ──────────────────────────────────────────────────────────
-//   async function loadMessages() {
-//     if (isLoading || !phone) return;
-//     isLoading = true;
+  async function loadMessages() {
+    if (isLoading || !phone) return;
+    isLoading = true;
 
-//     try {
-//       const res  = await fetch('/api/sms/history/' + phone);
-//       const data = await res.json();
+    try {
+      const res  = await fetch('/api/sms/history/' + phone);
+      const data = await res.json();
 
-//       if (data.success && data.messages) {
-//         const newSig = data.messages.map(m => m.id + m.direction + m.text).join('|');
-//         const oldSig = apiMessages.map(m => m.id + m.direction + m.text).join('|');
-//         if (newSig !== oldSig || isFirstLoad) {
-//           apiMessages = data.messages;
-//           render();
-//         }
-//         // document.getElementById('updatedText').textContent =
-//         //   'Updated ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-//         const updated = document.getElementById('updatedText');
-// if (updated) {
-//   updated.textContent =
-//     'Updated ' + new Date().toLocaleTimeString('en-US', {
-//       hour: 'numeric',
-//       minute: '2-digit'
-//     });
-// }
-//       } else if (isFirstLoad) {
-//         document.getElementById('msgScroll').innerHTML = `
-//           <div class="state-box">
-//             <div class="state-icon">💬</div>
-//             <h3>No messages yet</h3>
-//             <p>Send the first message to start the conversation</p>
-//           </div>`;
-//       }
-//       isFirstLoad = false;
-//     } catch (err) {
-//       console.error(err);
-//       if (isFirstLoad) {
-//         document.getElementById('msgScroll').innerHTML = `
-//           <div class="state-box">
-//             <div class="state-icon">⚠️</div>
-//             <h3>Unable to load</h3>
-//             <p>Check your connection and try again</p>
-//           </div>`;
-//       }
-//     } finally {
-//       isLoading = false;
-//     }
-//   }
+      if (data.success && data.messages) {
+        const newSig = data.messages.map(m => m.id + m.direction + m.text).join('|');
+        const oldSig = apiMessages.map(m => m.id + m.direction + m.text).join('|');
+        if (newSig !== oldSig || isFirstLoad) {
+          apiMessages = data.messages;
+          render();
+        }
+      } else if (isFirstLoad) {
+        document.getElementById('msgScroll').innerHTML = `
+          <div class="state-box">
+            <div class="state-icon">💬</div>
+            <h3>No messages yet</h3>
+            <p>Send the first message to start the conversation</p>
+          </div>`;
+      }
+      isFirstLoad = false;
+    } catch (err) {
+      console.error(err);
+      if (isFirstLoad) {
+        document.getElementById('msgScroll').innerHTML = `
+          <div class="state-box">
+            <div class="state-icon">⚠️</div>
+            <h3>Unable to load</h3>
+            <p>Check your connection and try again</p>
+          </div>`;
+      }
+    } finally {
+      isLoading = false;
+    }
+  }
 
-//   // ── Send ───────────────────────────────────────────────────────────────────
-//   async function sendSMS() {
-//     const msg   = msgInput.value.trim();
-//     const btn   = document.getElementById('sendBtn');
-//     const label = document.getElementById('sendLabel');
+  async function sendSMS() {
+    const msg  = msgInput.value.trim();
+    const btn  = document.getElementById('sendBtn');
+    const icon = document.getElementById('sendIcon');
 
-//     if (!msg)   { showStatus('error', 'Please enter a message'); return; }
-//     if (!phone) { showStatus('error', 'No phone number provided'); return; }
+    if (!msg)   { showStatus('error', 'Please enter a message'); return; }
+    if (!phone) { showStatus('error', 'No phone number provided'); return; }
 
-//     btn.disabled    = true;
-//     label.innerHTML = '<div class="spin"></div>';
+    btn.disabled  = true;
+    icon.innerHTML = '<div class="spin-sm"></div>';
 
-//     const localMsg = {
-//       id:        'local-' + Date.now(),
-//       text:      msg,
-//       timestamp: new Date().toISOString(),
-//       direction: 'outbound',
-//       source:    'local'
-//     };
-//     pendingLocal.push(localMsg);
-//     render();
+    const localMsg = {
+      id:        'local-' + Date.now(),
+      text:      msg,
+      timestamp: new Date().toISOString(),
+      direction: 'outbound',
+      source:    'local'
+    };
+    pendingLocal.push(localMsg);
+    render();
 
-//     try {
-//       const res  = await fetch('/api/sms/send', {
-//         method:  'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body:    JSON.stringify({ phone, message: msg })
-//       });
-//       const data = await res.json();
+    try {
+      const res  = await fetch('/api/sms/send', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ phone, message: msg })
+      });
+      const data = await res.json();
 
-//       // if (data.success) {
-//       //   showStatus('success', `Sent to ${name}`);
-//       //   msgInput.value = '';
-//       //   document.getElementById('charText').textContent = '0 / 1600';
-//       //   document.getElementById('charFill').style.width = '0%';
-//       //   // setTimeout(loadMessages, 2000);
-//       //   // setTimeout(loadMessages, 5000);
-//       //   loadMessages(); // immediate
-        
-//       // } 
-//       if (data.success) {
-//   // 🔥 Convert "sending..." message into real message instantly
-//   localMsg.source = 'api';
-//   localMsg.timestamp = new Date().toISOString();
-
-//   render(); // update UI immediately
-
-//   showStatus('success', `Sent to ${name}`);
-
-//   msgInput.value = '';
-
-//   const txt = document.getElementById('charText');
-//   const fill = document.getElementById('charFill');
-
-//   if (txt) txt.textContent = '0 / 1600';
-//   if (fill) fill.style.width = '0%';
-
-//   // 🔥 optional: quick sync (not delayed)
-//   loadMessages();
-// }
-//       else {
-//         pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
-//         render();
-//         throw new Error(data.error || 'Failed to send');
-//       }
-//     } catch (err) {
-//       pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
-//       render();
-//       showStatus('error', err.message);
-//     } finally {
-//       btn.disabled    = false;
-//       label.innerHTML = '➤';
-//       msgInput.focus();
-//     }
-//   }
-
-async function sendSMS() {
-  const msg   = msgInput.value.trim();
-  const btn   = document.getElementById('sendBtn');
-  const label = document.getElementById('sendLabel');
-
-  if (!msg)   { showStatus('error', 'Please enter a message'); return; }
-  if (!phone) { showStatus('error', 'No phone number provided'); return; }
-
-  // ── 1. Clear input & show bubble INSTANTLY ──────────────────────────────
-  const sentText = msg;
-  msgInput.value = '';
-  const txt  = document.getElementById('charText');
-  const fill = document.getElementById('charFill');
-  if (txt)  txt.textContent  = '0 / 1600';
-  if (fill) fill.style.width = '0%';
-
-  btn.disabled    = true;
-  label.innerHTML = '<div class="spin"></div>';
-
-  const localMsg = {
-    id:        'local-' + Date.now(),
-    text:      sentText,
-    timestamp: new Date().toISOString(),
-    direction: 'outbound',
-    source:    'local'   // shows "Sending…" label
-  };
-  pendingLocal.push(localMsg);
-  render(); // ← bubble appears immediately
-
-  // ── 2. Fire the API in the background ───────────────────────────────────
-  try {
-    const res  = await fetch('/api/sms/send', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ phone, message: sentText })
-    });
-    const data = await res.json();
-
-    if (data.success) {
-      localMsg.source = 'sent'; // removes "Sending…", shows real time
-      render();
-      showStatus('success', `Sent to ${name}`);
-      loadMessages(); // background sync
-    } else {
+      if (data.success) {
+        showStatus('success', `Sent to ${name}`);
+        msgInput.value = '';
+        msgInput.style.height = 'auto';
+        document.getElementById('charHint').textContent = '';
+        setTimeout(loadMessages, 2000);
+        setTimeout(loadMessages, 5000);
+      } else {
+        pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
+        render();
+        throw new Error(data.error || 'Failed to send');
+      }
+    } catch (err) {
       pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
       render();
-      throw new Error(data.error || 'Failed to send');
+      showStatus('error', err.message);
+    } finally {
+      btn.disabled   = false;
+      icon.innerHTML = `<svg class="send-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+      msgInput.focus();
     }
-  } catch (err) {
-    pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
-    render();
-    showStatus('error', err.message);
-  } finally {
-    btn.disabled    = false;
-    label.innerHTML = '➤';
-    msgInput.focus();
   }
-}
 
   function showStatus(type, msg) {
-  const area = document.getElementById('statusArea');
-  if (!area) return; // 🔥 IMPORTANT
-
-  const icon = type === 'success' ? '✓' : '✕';
-  area.innerHTML = `<div class="status-pill ${type}">${icon} ${msg}</div>`;
-
-  if (type === 'success') {
-    setTimeout(() => { area.innerHTML = ''; }, 3000);
+    const area = document.getElementById('statusArea');
+    const icon = type === 'success' ? '✓' : '✕';
+    area.innerHTML = `<div class="status-pill ${type}">${icon} ${msg}</div>`;
+    if (type === 'success') setTimeout(() => { area.innerHTML = ''; }, 3000);
   }
-}
 
-  // ── Boot ───────────────────────────────────────────────────────────────────
   if (phone) loadMessages();
-  // setInterval(loadMessages, 10000);
-  setInterval(loadMessages, 2000);
+  setInterval(loadMessages, 10000);
 
   msgInput.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendSMS(); }
