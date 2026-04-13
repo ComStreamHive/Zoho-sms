@@ -335,13 +335,13 @@
     </div>
     <div class="header-right">
       <div class="live-dot-wrap"><span class="live-dot"></span>Live</div>
-      <button class="icon-btn" onclick="loadMessages()" title="Refresh">
+      <button type="button" class="icon-btn" onclick="event.preventDefault();loadMessages();" title="Refresh">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
           <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l5.36 4.36A9 9 0 0020.49 15"/>
         </svg>
       </button>
-      <button class="icon-btn" onclick="window.close()" title="Close">
+      <button type="button" class="icon-btn" onclick="event.preventDefault();history.back();" title="Close">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
