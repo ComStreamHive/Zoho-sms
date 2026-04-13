@@ -638,7 +638,8 @@ if (phone) {
       }
 
       const row    = document.createElement('div');
-      const cls    = msg.source === 'local' ? 'sending' : msg.direction;
+      // const cls    = msg.source === 'local' ? 'sending' : msg.direction;
+      const cls = msg.source === 'local' ? 'sending' : (msg.source === 'sent' ? 'outbound' : msg.direction);
       row.className = `msg-row ${cls}`;
       const sender  = msg.direction === 'outbound' || msg.source === 'local' ? 'You' : name;
 
@@ -660,108 +661,189 @@ if (chip) {
   }
 
   // ── Load messages ──────────────────────────────────────────────────────────
-  async function loadMessages() {
-    if (isLoading || !phone) return;
-    isLoading = true;
+//   async function loadMessages() {
+//     if (isLoading || !phone) return;
+//     isLoading = true;
 
-    try {
-      const res  = await fetch('/api/sms/history/' + phone);
-      const data = await res.json();
+//     try {
+//       const res  = await fetch('/api/sms/history/' + phone);
+//       const data = await res.json();
 
-      if (data.success && data.messages) {
-        const newSig = data.messages.map(m => m.id + m.direction + m.text).join('|');
-        const oldSig = apiMessages.map(m => m.id + m.direction + m.text).join('|');
-        if (newSig !== oldSig || isFirstLoad) {
-          apiMessages = data.messages;
-          render();
-        }
-        // document.getElementById('updatedText').textContent =
-        //   'Updated ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-        const updated = document.getElementById('updatedText');
-if (updated) {
-  updated.textContent =
-    'Updated ' + new Date().toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit'
-    });
-}
-      } else if (isFirstLoad) {
-        document.getElementById('msgScroll').innerHTML = `
-          <div class="state-box">
-            <div class="state-icon">💬</div>
-            <h3>No messages yet</h3>
-            <p>Send the first message to start the conversation</p>
-          </div>`;
-      }
-      isFirstLoad = false;
-    } catch (err) {
-      console.error(err);
-      if (isFirstLoad) {
-        document.getElementById('msgScroll').innerHTML = `
-          <div class="state-box">
-            <div class="state-icon">⚠️</div>
-            <h3>Unable to load</h3>
-            <p>Check your connection and try again</p>
-          </div>`;
-      }
-    } finally {
-      isLoading = false;
-    }
-  }
+//       if (data.success && data.messages) {
+//         const newSig = data.messages.map(m => m.id + m.direction + m.text).join('|');
+//         const oldSig = apiMessages.map(m => m.id + m.direction + m.text).join('|');
+//         if (newSig !== oldSig || isFirstLoad) {
+//           apiMessages = data.messages;
+//           render();
+//         }
+//         // document.getElementById('updatedText').textContent =
+//         //   'Updated ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+//         const updated = document.getElementById('updatedText');
+// if (updated) {
+//   updated.textContent =
+//     'Updated ' + new Date().toLocaleTimeString('en-US', {
+//       hour: 'numeric',
+//       minute: '2-digit'
+//     });
+// }
+//       } else if (isFirstLoad) {
+//         document.getElementById('msgScroll').innerHTML = `
+//           <div class="state-box">
+//             <div class="state-icon">💬</div>
+//             <h3>No messages yet</h3>
+//             <p>Send the first message to start the conversation</p>
+//           </div>`;
+//       }
+//       isFirstLoad = false;
+//     } catch (err) {
+//       console.error(err);
+//       if (isFirstLoad) {
+//         document.getElementById('msgScroll').innerHTML = `
+//           <div class="state-box">
+//             <div class="state-icon">⚠️</div>
+//             <h3>Unable to load</h3>
+//             <p>Check your connection and try again</p>
+//           </div>`;
+//       }
+//     } finally {
+//       isLoading = false;
+//     }
+//   }
 
-  // ── Send ───────────────────────────────────────────────────────────────────
-  async function sendSMS() {
-    const msg   = msgInput.value.trim();
-    const btn   = document.getElementById('sendBtn');
-    const label = document.getElementById('sendLabel');
+//   // ── Send ───────────────────────────────────────────────────────────────────
+//   async function sendSMS() {
+//     const msg   = msgInput.value.trim();
+//     const btn   = document.getElementById('sendBtn');
+//     const label = document.getElementById('sendLabel');
 
-    if (!msg)   { showStatus('error', 'Please enter a message'); return; }
-    if (!phone) { showStatus('error', 'No phone number provided'); return; }
+//     if (!msg)   { showStatus('error', 'Please enter a message'); return; }
+//     if (!phone) { showStatus('error', 'No phone number provided'); return; }
 
-    btn.disabled    = true;
-    label.innerHTML = '<div class="spin"></div>';
+//     btn.disabled    = true;
+//     label.innerHTML = '<div class="spin"></div>';
 
-    const localMsg = {
-      id:        'local-' + Date.now(),
-      text:      msg,
-      timestamp: new Date().toISOString(),
-      direction: 'outbound',
-      source:    'local'
-    };
-    pendingLocal.push(localMsg);
-    render();
+//     const localMsg = {
+//       id:        'local-' + Date.now(),
+//       text:      msg,
+//       timestamp: new Date().toISOString(),
+//       direction: 'outbound',
+//       source:    'local'
+//     };
+//     pendingLocal.push(localMsg);
+//     render();
 
-    try {
-      const res  = await fetch('/api/sms/send', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ phone, message: msg })
-      });
-      const data = await res.json();
+//     try {
+//       const res  = await fetch('/api/sms/send', {
+//         method:  'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body:    JSON.stringify({ phone, message: msg })
+//       });
+//       const data = await res.json();
 
-      if (data.success) {
-        showStatus('success', `Sent to ${name}`);
-        msgInput.value = '';
-        document.getElementById('charText').textContent = '0 / 1600';
-        document.getElementById('charFill').style.width = '0%';
-        setTimeout(loadMessages, 2000);
-        setTimeout(loadMessages, 5000);
+//       // if (data.success) {
+//       //   showStatus('success', `Sent to ${name}`);
+//       //   msgInput.value = '';
+//       //   document.getElementById('charText').textContent = '0 / 1600';
+//       //   document.getElementById('charFill').style.width = '0%';
+//       //   // setTimeout(loadMessages, 2000);
+//       //   // setTimeout(loadMessages, 5000);
+//       //   loadMessages(); // immediate
         
-      } else {
-        pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
-        render();
-        throw new Error(data.error || 'Failed to send');
-      }
-    } catch (err) {
+//       // } 
+//       if (data.success) {
+//   // 🔥 Convert "sending..." message into real message instantly
+//   localMsg.source = 'api';
+//   localMsg.timestamp = new Date().toISOString();
+
+//   render(); // update UI immediately
+
+//   showStatus('success', `Sent to ${name}`);
+
+//   msgInput.value = '';
+
+//   const txt = document.getElementById('charText');
+//   const fill = document.getElementById('charFill');
+
+//   if (txt) txt.textContent = '0 / 1600';
+//   if (fill) fill.style.width = '0%';
+
+//   // 🔥 optional: quick sync (not delayed)
+//   loadMessages();
+// }
+//       else {
+//         pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
+//         render();
+//         throw new Error(data.error || 'Failed to send');
+//       }
+//     } catch (err) {
+//       pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
+//       render();
+//       showStatus('error', err.message);
+//     } finally {
+//       btn.disabled    = false;
+//       label.innerHTML = '➤';
+//       msgInput.focus();
+//     }
+//   }
+
+async function sendSMS() {
+  const msg   = msgInput.value.trim();
+  const btn   = document.getElementById('sendBtn');
+  const label = document.getElementById('sendLabel');
+
+  if (!msg)   { showStatus('error', 'Please enter a message'); return; }
+  if (!phone) { showStatus('error', 'No phone number provided'); return; }
+
+  // ── 1. Clear input & show bubble INSTANTLY ──────────────────────────────
+  const sentText = msg;
+  msgInput.value = '';
+  const txt  = document.getElementById('charText');
+  const fill = document.getElementById('charFill');
+  if (txt)  txt.textContent  = '0 / 1600';
+  if (fill) fill.style.width = '0%';
+
+  btn.disabled    = true;
+  label.innerHTML = '<div class="spin"></div>';
+
+  const localMsg = {
+    id:        'local-' + Date.now(),
+    text:      sentText,
+    timestamp: new Date().toISOString(),
+    direction: 'outbound',
+    source:    'local'   // shows "Sending…" label
+  };
+  pendingLocal.push(localMsg);
+  render(); // ← bubble appears immediately
+
+  // ── 2. Fire the API in the background ───────────────────────────────────
+  try {
+    const res  = await fetch('/api/sms/send', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ phone, message: sentText })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      localMsg.source = 'sent'; // removes "Sending…", shows real time
+      render();
+      showStatus('success', `Sent to ${name}`);
+      loadMessages(); // background sync
+    } else {
       pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
       render();
-      showStatus('error', err.message);
-    } finally {
-      btn.disabled    = false;
-      label.innerHTML = '➤';
-      msgInput.focus();
+      throw new Error(data.error || 'Failed to send');
     }
+  } catch (err) {
+    pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
+    render();
+    showStatus('error', err.message);
+  } finally {
+    btn.disabled    = false;
+    label.innerHTML = '➤';
+    msgInput.focus();
   }
+}
 
   function showStatus(type, msg) {
   const area = document.getElementById('statusArea');
@@ -777,7 +859,8 @@ if (updated) {
 
   // ── Boot ───────────────────────────────────────────────────────────────────
   if (phone) loadMessages();
-  setInterval(loadMessages, 10000);
+  // setInterval(loadMessages, 10000);
+  setInterval(loadMessages, 2000);
 
   msgInput.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendSMS(); }
