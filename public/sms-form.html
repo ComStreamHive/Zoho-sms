@@ -243,24 +243,24 @@
 const params = new URLSearchParams(window.location.search);
 const phone  = params.get('phone') || '';
 const name   = params.get('name')  || 'Customer';
-let token    = '';  // set after sessionStorage is ready
+let token = '';
 
-// ── STEP 3: Wait for auth-check.js to set sessionStorage ─
-function waitForToken(retries = 20) {
-  const stored = sessionStorage.getItem('sms_auth_token');
-  if (stored) {
-    token = stored;
+// ── STEP 3: Wait for auth-check.js to fire the ready event ─
+document.addEventListener('sms_auth_ready', function(e) {
+    if (!e.detail.token) {
+        showBlocked('Please login from the Zoho Notifier Chrome Extension first.');
+        return;
+    }
+    token = e.detail.token;
     verifyAuth();
-    return;
-  }
-  if (retries <= 0) {
-    showBlocked('Please open this page from the Chrome Extension.');
-    return;
-  }
-  setTimeout(() => waitForToken(retries - 1), 100);
-}
+});
 
-waitForToken();
+// Fallback: if event never fires within 3 seconds, block
+const authTimeout = setTimeout(() => {
+    if (!token) {
+        showBlocked('Please login from the Zoho Notifier Chrome Extension first.');
+    }
+}, 3000);
 
 // ── STEP 4: Auth Gate helpers ────────────────────────────
 function showBlocked(message) {
@@ -278,22 +278,23 @@ function revealApp() {
 }
 
 async function verifyAuth() {
-  try {
-    const res  = await fetch('https://zohotesting.streamtechnologies.in/user/verify', {
-      method:  'GET',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await res.json();
+    clearTimeout(authTimeout);
+    try {
+        const res  = await fetch('https://zohotesting.streamtechnologies.in/user/verify', {
+            method:  'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
 
-    if (data.success) {
-      revealApp();
-      initApp();
-    } else {
-      showBlocked('Session expired. Please login again from the extension.');
+        if (data.success) {
+            revealApp();
+            initApp();
+        } else {
+            showBlocked('Session expired. Please login again from the extension.');
+        }
+    } catch (err) {
+        showBlocked('Unable to verify session. Check your connection and try again.');
     }
-  } catch (err) {
-    showBlocked('Unable to verify session. Check your connection and try again.');
-  }
 }
 
 // ── STEP 5: App init (only after auth passes) ────────────
