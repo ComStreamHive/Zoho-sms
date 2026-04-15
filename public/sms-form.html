@@ -12,7 +12,7 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f5f5f5;
+      background: #F5F5F5;
       color: #111;
       font-size: 14px;
     }
@@ -34,295 +34,145 @@
       padding: 0 16px;
       height: 64px;
       background: #fff;
-      border-bottom: 1px solid #ebebeb;
+      border-bottom: 1px solid #EBEBEB;
     }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
+    .header-left { display: flex; align-items: center; gap: 12px; }
     .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #1a73e8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 15px;
-      font-weight: 600;
-      flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #1A73E8; display: flex; align-items: center;
+      justify-content: center; color: #fff; font-size: 15px;
+      font-weight: 600; flex-shrink: 0;
     }
-
-    .contact-info .cname {
-      font-size: 15px;
-      font-weight: 600;
-      color: #111;
-      line-height: 1.2;
-    }
-
-    .contact-info .cphone {
-      font-size: 12px;
-      color: #888;
-      margin-top: 1px;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
+    .contact-info .cname { font-size: 15px; font-weight: 600; color: #111; line-height: 1.2; }
+    .contact-info .cphone { font-size: 12px; color: #888; margin-top: 1px; }
+    .header-right { display: flex; align-items: center; gap: 6px; }
     .icon-btn {
-      width: 36px;
-      height: 36px;
-      border: none;
-      background: transparent;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: #555;
-      font-size: 18px;
+      width: 36px; height: 36px; border: none; background: transparent;
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; color: #555; font-size: 18px;
       transition: background 0.15s;
     }
-    .icon-btn:hover { background: #f0f0f0; }
-
+    .icon-btn:hover { background: #F0F0F0; }
     .live-dot-wrap {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      font-weight: 500;
-      color: #34a853;
-      background: #e8f5e9;
-      padding: 4px 10px;
-      border-radius: 20px;
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 500; color: #34A853;
+      background: #E8F5E9; padding: 4px 10px; border-radius: 20px;
     }
     .live-dot {
-      width: 6px;
-      height: 6px;
-      background: #34a853;
-      border-radius: 50%;
-      animation: livepulse 2s ease-in-out infinite;
+      width: 6px; height: 6px; background: #34A853;
+      border-radius: 50%; animation: livepulse 2s ease-in-out infinite;
     }
     @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
     /* ── MESSAGES ── */
     .messages-wrap {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 16px 16px 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      background: #f9f9f9;
-      min-height: 0;
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding: 16px 16px 8px; display: flex; flex-direction: column;
+      gap: 2px; background: #F9F9F9; min-height: 0;
     }
     .messages-wrap::-webkit-scrollbar { width: 4px; }
     .messages-wrap::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 12px 0 6px;
-    }
-    .divider-line { flex: 1; height: 1px; background: #e0e0e0; }
+    .divider { display: flex; align-items: center; gap: 8px; margin: 12px 0 6px; }
+    .divider-line { flex: 1; height: 1px; background: #E0E0E0; }
     .divider-label { font-size: 11px; color: #aaa; font-weight: 500; white-space: nowrap; }
-
     .msg-row { display: flex; margin-bottom: 2px; animation: pop 0.18s ease; }
     @keyframes pop { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
-
-    /* outbound = left (from this app/you) */
     .msg-row.outbound { justify-content: flex-start; }
-    .msg-row.outbound .bubble {
-      background: #fff;
-      border: 1px solid #e8e8e8;
-      border-bottom-left-radius: 4px;
-      color: #111;
-    }
-
-    /* inbound = right (from customer) */
+    .msg-row.outbound .bubble { background: #fff; border: 1px solid #E8E8E8; border-bottom-left-radius: 4px; color: #111; }
     .msg-row.inbound { justify-content: flex-end; }
-    .msg-row.inbound .bubble {
-      background: #1a73e8;
-      border-bottom-right-radius: 4px;
-      color: #fff;
-    }
-
+    .msg-row.inbound .bubble { background: #1A73E8; border-bottom-right-radius: 4px; color: #fff; }
     .msg-row.sending { justify-content: flex-start; opacity: 0.6; }
-    .msg-row.sending .bubble {
-      background: #fff;
-      border: 1px dashed #ccc;
-      border-bottom-left-radius: 4px;
-      color: #999;
-    }
-
-    .bubble {
-      max-width: 70%;
-      padding: 8px 12px 6px;
-      border-radius: 16px;
-      font-size: 14px;
-      line-height: 1.5;
-      word-wrap: break-word;
-    }
-
-    .b-from {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      margin-bottom: 2px;
-      opacity: 0.5;
-    }
-
+    .msg-row.sending .bubble { background: #fff; border: 1px dashed #ccc; border-bottom-left-radius: 4px; color: #999; }
+    .bubble { max-width: 70%; padding: 8px 12px 6px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-wrap: break-word; }
+    .b-from { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; opacity: 0.5; }
     .b-text { white-space: pre-wrap; word-break: break-word; }
-
-    .b-time {
-      font-size: 10px;
-      opacity: 0.45;
-      margin-top: 4px;
-    }
+    .b-time { font-size: 10px; opacity: 0.45; margin-top: 4px; }
     .msg-row.outbound .b-time, .msg-row.sending .b-time { text-align: left; }
     .msg-row.inbound .b-time { text-align: right; }
-
-    /* state boxes */
     .state-box {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 40px 20px;
-      text-align: center;
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; padding: 40px 20px; text-align: center;
     }
     .state-icon { font-size: 32px; }
     .state-box h3 { font-size: 15px; font-weight: 600; color: #444; }
     .state-box p  { font-size: 13px; color: #999; max-width: 220px; }
     .big-spin {
-      width: 28px;
-      height: 28px;
-      border: 2.5px solid #e0e0e0;
-      border-top-color: #1a73e8;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
+      width: 28px; height: 28px;
+      border: 2.5px solid #E0E0E0; border-top-color: #1A73E8;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
     }
     @keyframes spin { to{transform:rotate(360deg)} }
 
-    /* ── STATUS BAR ── */
-    .status-bar {
-      flex-shrink: 0;
-      min-height: 0;
-      padding: 0 16px;
+    /* ── AUTH GATE ── */
+    .auth-gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #fff; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px; text-align: center; padding: 32px;
     }
+    .auth-gate .gate-icon { font-size: 48px; }
+    .auth-gate h2 { font-size: 18px; font-weight: 600; color: #111; }
+    .auth-gate p  { font-size: 14px; color: #888; max-width: 260px; line-height: 1.6; }
+    .auth-gate .gate-spin {
+      width: 32px; height: 32px;
+      border: 3px solid #E0E0E0; border-top-color: #1A73E8;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar { flex-shrink: 0; min-height: 0; padding: 0 16px; }
     .status-pill {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 500;
-      margin: 4px 0;
-      animation: fadeUp 0.2s ease;
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 10px; border-radius: 8px; font-size: 12px;
+      font-weight: 500; margin: 4px 0; animation: fadeUp 0.2s ease;
     }
     @keyframes fadeUp { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
-    .status-pill.success { background: #e8f5e9; color: #2e7d32; }
-    .status-pill.error   { background: #fce8e6; color: #c62828; }
+    .status-pill.success { background: #E8F5E9; color: #2E7D32; }
+    .status-pill.error   { background: #FCE8E6; color: #C62828; }
 
     /* ── BOTTOM INPUT BAR ── */
     .input-bar {
-      flex-shrink: 0;
-      display: flex;
-      align-items: flex-end;
-      gap: 8px;
-      padding: 10px 12px;
-      background: #fff;
-      border-top: 1px solid #ebebeb;
+      flex-shrink: 0; display: flex; align-items: flex-end;
+      gap: 8px; padding: 10px 12px; background: #fff;
+      border-top: 1px solid #EBEBEB;
     }
-
     .input-bar textarea {
-      flex: 1;
-      resize: none;
-      border: 1px solid #e0e0e0;
-      border-radius: 22px;
-      padding: 10px 16px;
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      line-height: 1.5;
-      color: #111;
-      background: #f7f7f7;
-      outline: none;
-      max-height: 120px;
-      min-height: 40px;
-      overflow-y: auto;
-      transition: border-color 0.15s, background 0.15s;
+      flex: 1; resize: none; border: 1px solid #E0E0E0;
+      border-radius: 22px; padding: 10px 16px;
+      font-family: 'Inter', sans-serif; font-size: 14px;
+      line-height: 1.5; color: #111; background: #F7F7F7;
+      outline: none; max-height: 120px; min-height: 40px;
+      overflow-y: auto; transition: border-color 0.15s, background 0.15s;
     }
     .input-bar textarea::placeholder { color: #aaa; }
-    .input-bar textarea:focus {
-      border-color: #1a73e8;
-      background: #fff;
-    }
-
+    .input-bar textarea:focus { border-color: #1A73E8; background: #fff; }
     .send-btn {
-      flex-shrink: 0;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #1a73e8;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
-      color: #fff;
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+      background: #1A73E8; border: none; display: flex;
+      align-items: center; justify-content: center; cursor: pointer;
+      transition: background 0.15s, transform 0.1s; color: #fff;
     }
-    .send-btn:hover:not(:disabled) { background: #1558b0; }
+    .send-btn:hover:not(:disabled) { background: #1558B0; }
     .send-btn:active:not(:disabled) { transform: scale(0.94); }
-    .send-btn:disabled { background: #b0c8f5; cursor: not-allowed; }
-
-    /* send icon */
-    .send-icon {
-      width: 18px;
-      height: 18px;
-      fill: none;
-      stroke: #fff;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .spin-sm {
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-
-    /* char counter small */
-    .char-hint {
-      font-size: 10px;
-      color: #bbb;
-      text-align: right;
-      padding: 0 16px 4px;
-      flex-shrink: 0;
-    }
-    .char-hint.warn   { color: #f59e0b; }
-    .char-hint.danger { color: #dc2626; font-weight: 600; }
+    .send-btn:disabled { background: #B0C8F5; cursor: not-allowed; }
+    .send-icon { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .spin-sm { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    .char-hint { font-size: 10px; color: #bbb; text-align: right; padding: 0 16px 4px; flex-shrink: 0; }
+    .char-hint.warn   { color: #F59E0B; }
+    .char-hint.danger { color: #DC2626; font-weight: 600; }
   </style>
 </head>
 <body>
-<div class="app">
+
+<!-- ── AUTH GATE OVERLAY (shown while verifying) ── -->
+<div class="auth-gate" id="authGate">
+  <div class="gate-spin"></div>
+  <h2>Verifying session…</h2>
+  <p>Please wait while we confirm your login.</p>
+</div>
+
+<div class="app" id="appShell" style="display:none;">
 
   <!-- HEADER -->
   <div class="header">
@@ -365,12 +215,7 @@
 
   <!-- INPUT BAR -->
   <div class="input-bar">
-    <textarea
-      id="msgInput"
-      placeholder="Type a message…"
-      maxlength="1600"
-      rows="1"
-    ></textarea>
+    <textarea id="msgInput" placeholder="Type a message…" maxlength="1600" rows="1"></textarea>
     <button class="send-btn" id="sendBtn" onclick="sendSMS()">
       <span id="sendIcon">
         <svg class="send-icon" viewBox="0 0 24 24">
@@ -381,27 +226,70 @@
     </button>
   </div>
 
-</div>
+</div><!-- /.app -->
 
 <script>
-  (function () {
-    const url = new URL(window.location.href);
-    if (url.searchParams.has('key')) {
-      url.searchParams.delete('key');
-      history.replaceState({}, '', url.toString());
+// ── STEP 1: Strip legacy ?key param ──────────────────────
+(function () {
+  const url = new URL(window.location.href);
+  if (url.searchParams.has('key')) {
+    url.searchParams.delete('key');
+    history.replaceState({}, '', url.toString());
+  }
+})();
+
+// ── STEP 2: Read URL params ───────────────────────────────
+const params = new URLSearchParams(window.location.search);
+const phone  = params.get('phone') || '';
+const name   = params.get('name')  || 'Customer';
+const token  = params.get('token') || '';  // ← injected by extension
+
+// ── STEP 3: Auth Gate ─────────────────────────────────────
+function showBlocked(message) {
+  const gate = document.getElementById('authGate');
+  gate.innerHTML = `
+    <div class="gate-icon">🔒</div>
+    <h2>Access Denied</h2>
+    <p>${message}</p>
+  `;
+}
+
+function revealApp() {
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('appShell').style.display = 'flex';
+}
+
+async function verifyAuth() {
+  // No token at all → block immediately
+  if (!token) {
+    showBlocked('Please open this page from the Chrome Extension.');
+    return;
+  }
+
+  try {
+    const res  = await fetch('https://zohotesting.streamtechnologies.in/user/verify', {
+      method:  'GET',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      // ✅ Valid session — show the app
+      revealApp();
+      initApp();
+    } else {
+      showBlocked('Session expired. Please login again from the extension.');
     }
-  })();
+  } catch (err) {
+    // Network error — still block rather than allow
+    showBlocked('Unable to verify session. Check your connection and try again.');
+  }
+}
 
-  const params = new URLSearchParams(window.location.search);
-  const phone  = params.get('phone') || '';
-  const name   = params.get('name')  || 'Customer';
+verifyAuth();
 
-  let apiMessages  = [];
-  let pendingLocal = [];
-  let isFirstLoad  = true;
-  let isLoading    = false;
-
-  // Setup recipient
+// ── STEP 4: App initialisation (only runs after auth pass) ─
+function initApp() {
   if (phone) {
     const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
     document.getElementById('avatarEl').textContent = init || '?';
@@ -409,12 +297,10 @@
     document.getElementById('rphone').textContent   = fmtPhone(phone);
   }
 
-  // Auto-grow textarea
   const msgInput = document.getElementById('msgInput');
   msgInput.addEventListener('input', () => {
     msgInput.style.height = 'auto';
     msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
-
     const len  = msgInput.value.length;
     const hint = document.getElementById('charHint');
     if (len > 1200) {
@@ -426,199 +312,211 @@
     }
   });
 
-  function fmtPhone(p) {
-    const c = p.replace(/\D/g, '');
-    return c.length === 10 ? `(${c.substr(0,3)}) ${c.substr(3,3)}-${c.substr(6,4)}` : p;
+  msgInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendSMS(); }
+  });
+
+  if (phone) loadMessages();
+  setInterval(loadMessages, 10000);
+  msgInput.focus();
+}
+
+// ── Helpers ───────────────────────────────────────────────
+let apiMessages  = [];
+let pendingLocal = [];
+let isFirstLoad  = true;
+let isLoading    = false;
+
+function authHeaders(extra = {}) {
+  return { 'Authorization': `Bearer ${token}`, ...extra };
+}
+
+function fmtPhone(p) {
+  const c = p.replace(/\D/g, '');
+  return c.length === 10 ? `(${c.substr(0,3)}) ${c.substr(3,3)}-${c.substr(6,4)}` : p;
+}
+
+function fmtTime(ts) {
+  if (!ts) return '';
+  const d    = new Date(ts), now = new Date();
+  const days = Math.floor((now - d) / 86400000);
+  const t    = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  if (days === 0) return t;
+  if (days === 1) return 'Yesterday · ' + t;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · ' + t;
+}
+
+function fmtDateLabel(ts) {
+  const d    = new Date(ts), now = new Date();
+  const days = Math.floor((now - d) / 86400000);
+  if (days === 0) return 'Today';
+  if (days === 1) return 'Yesterday';
+  return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+
+function esc(t) {
+  const d = document.createElement('div');
+  d.textContent = t;
+  return d.innerHTML;
+}
+
+function nearBottom() {
+  const el = document.getElementById('msgScroll');
+  return (el.scrollHeight - el.scrollTop - el.clientHeight) < 120;
+}
+
+function scrollDown() {
+  const el = document.getElementById('msgScroll');
+  el.scrollTop = el.scrollHeight;
+}
+
+function render() {
+  const scroll  = document.getElementById('msgScroll');
+  const wasNear = nearBottom();
+  scroll.innerHTML = '';
+
+  const confirmedTexts = new Set(apiMessages.map(m => m.text.trim()));
+  const visiblePending = pendingLocal.filter(p => !confirmedTexts.has(p.text.trim()));
+  const combined = [...apiMessages, ...visiblePending]
+    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  if (!combined.length) {
+    scroll.innerHTML = `
+      <div class="state-box">
+        <div class="state-icon">💬</div>
+        <h3>No messages yet</h3>
+        <p>Send the first message to start the conversation</p>
+      </div>`;
+    return;
   }
 
-  function fmtTime(ts) {
-    if (!ts) return '';
-    const d    = new Date(ts), now = new Date();
-    const days = Math.floor((now - d) / 86400000);
-    const t    = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    if (days === 0) return t;
-    if (days === 1) return 'Yesterday · ' + t;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · ' + t;
-  }
+  let lastLabel = '';
+  combined.forEach(msg => {
+    const label = fmtDateLabel(msg.timestamp);
+    if (label !== lastLabel) {
+      lastLabel = label;
+      const div = document.createElement('div');
+      div.className = 'divider';
+      div.innerHTML = `<div class="divider-line"></div><span class="divider-label">${label}</span><div class="divider-line"></div>`;
+      scroll.appendChild(div);
+    }
+    const row    = document.createElement('div');
+    const cls    = msg.source === 'local' ? 'sending' : msg.direction;
+    row.className = `msg-row ${cls}`;
+    const sender  = msg.direction === 'outbound' || msg.source === 'local' ? 'You' : name;
+    row.innerHTML = `
+      <div class="bubble">
+        <div class="b-from">${esc(sender)}</div>
+        <div class="b-text">${esc(msg.text)}</div>
+        <div class="b-time">${msg.source === 'local' ? 'Sending…' : fmtTime(msg.timestamp)}</div>
+      </div>`;
+    scroll.appendChild(row);
+  });
 
-  function fmtDateLabel(ts) {
-    const d    = new Date(ts), now = new Date();
-    const days = Math.floor((now - d) / 86400000);
-    if (days === 0) return 'Today';
-    if (days === 1) return 'Yesterday';
-    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-  }
+  if (wasNear || isFirstLoad) scrollDown();
+}
 
-  function esc(t) {
-    const d = document.createElement('div');
-    d.textContent = t;
-    return d.innerHTML;
-  }
+async function loadMessages() {
+  if (isLoading || !phone) return;
+  isLoading = true;
+  try {
+    // ✅ Token passed in Authorization header
+    const res  = await fetch('/api/sms/history/' + phone, {
+      headers: authHeaders()
+    });
+    const data = await res.json();
 
-  function nearBottom() {
-    const el = document.getElementById('msgScroll');
-    return (el.scrollHeight - el.scrollTop - el.clientHeight) < 120;
-  }
-
-  function scrollDown() {
-    const el = document.getElementById('msgScroll');
-    el.scrollTop = el.scrollHeight;
-  }
-
-  function render() {
-    const scroll  = document.getElementById('msgScroll');
-    const wasNear = nearBottom();
-    scroll.innerHTML = '';
-
-    const confirmedTexts = new Set(apiMessages.map(m => m.text.trim()));
-    const visiblePending = pendingLocal.filter(p => !confirmedTexts.has(p.text.trim()));
-
-    const combined = [...apiMessages, ...visiblePending]
-      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-    if (!combined.length) {
-      scroll.innerHTML = `
+    if (data.success && data.messages) {
+      const newSig = data.messages.map(m => m.id + m.direction + m.text).join('|');
+      const oldSig = apiMessages.map(m => m.id + m.direction + m.text).join('|');
+      if (newSig !== oldSig || isFirstLoad) {
+        apiMessages = data.messages;
+        render();
+      }
+    } else if (isFirstLoad) {
+      document.getElementById('msgScroll').innerHTML = `
         <div class="state-box">
           <div class="state-icon">💬</div>
           <h3>No messages yet</h3>
           <p>Send the first message to start the conversation</p>
         </div>`;
-      return;
     }
-
-    let lastLabel = '';
-    combined.forEach(msg => {
-      const label = fmtDateLabel(msg.timestamp);
-      if (label !== lastLabel) {
-        lastLabel = label;
-        const div = document.createElement('div');
-        div.className = 'divider';
-        div.innerHTML = `<div class="divider-line"></div><span class="divider-label">${label}</span><div class="divider-line"></div>`;
-        scroll.appendChild(div);
-      }
-
-      const row    = document.createElement('div');
-      const cls    = msg.source === 'local' ? 'sending' : msg.direction;
-      row.className = `msg-row ${cls}`;
-      const sender  = msg.direction === 'outbound' || msg.source === 'local' ? 'You' : name;
-
-      row.innerHTML = `
-        <div class="bubble">
-          <div class="b-from">${esc(sender)}</div>
-          <div class="b-text">${esc(msg.text)}</div>
-          <div class="b-time">${msg.source === 'local' ? 'Sending…' : fmtTime(msg.timestamp)}</div>
+    isFirstLoad = false;
+  } catch (err) {
+    console.error(err);
+    if (isFirstLoad) {
+      document.getElementById('msgScroll').innerHTML = `
+        <div class="state-box">
+          <div class="state-icon">⚠️</div>
+          <h3>Unable to load</h3>
+          <p>Check your connection and try again</p>
         </div>`;
-      scroll.appendChild(row);
-    });
-
-    if (wasNear || isFirstLoad) scrollDown();
-  }
-
-  async function loadMessages() {
-    if (isLoading || !phone) return;
-    isLoading = true;
-
-    try {
-      const res  = await fetch('/api/sms/history/' + phone);
-      const data = await res.json();
-
-      if (data.success && data.messages) {
-        const newSig = data.messages.map(m => m.id + m.direction + m.text).join('|');
-        const oldSig = apiMessages.map(m => m.id + m.direction + m.text).join('|');
-        if (newSig !== oldSig || isFirstLoad) {
-          apiMessages = data.messages;
-          render();
-        }
-      } else if (isFirstLoad) {
-        document.getElementById('msgScroll').innerHTML = `
-          <div class="state-box">
-            <div class="state-icon">💬</div>
-            <h3>No messages yet</h3>
-            <p>Send the first message to start the conversation</p>
-          </div>`;
-      }
-      isFirstLoad = false;
-    } catch (err) {
-      console.error(err);
-      if (isFirstLoad) {
-        document.getElementById('msgScroll').innerHTML = `
-          <div class="state-box">
-            <div class="state-icon">⚠️</div>
-            <h3>Unable to load</h3>
-            <p>Check your connection and try again</p>
-          </div>`;
-      }
-    } finally {
-      isLoading = false;
     }
+  } finally {
+    isLoading = false;
   }
+}
 
-  async function sendSMS() {
-    const msg  = msgInput.value.trim();
-    const btn  = document.getElementById('sendBtn');
-    const icon = document.getElementById('sendIcon');
+async function sendSMS() {
+  const msgInput = document.getElementById('msgInput');
+  const msg  = msgInput.value.trim();
+  const btn  = document.getElementById('sendBtn');
+  const icon = document.getElementById('sendIcon');
 
-    if (!msg)   { showStatus('error', 'Please enter a message'); return; }
-    if (!phone) { showStatus('error', 'No phone number provided'); return; }
+  if (!msg)   { showStatus('error', 'Please enter a message'); return; }
+  if (!phone) { showStatus('error', 'No phone number provided'); return; }
 
-    btn.disabled  = true;
-    icon.innerHTML = '<div class="spin-sm"></div>';
+  btn.disabled   = true;
+  icon.innerHTML = '<div class="spin-sm"></div>';
 
-    const localMsg = {
-      id:        'local-' + Date.now(),
-      text:      msg,
-      timestamp: new Date().toISOString(),
-      direction: 'outbound',
-      source:    'local'
-    };
-    pendingLocal.push(localMsg);
-    render();
+  const localMsg = {
+    id:        'local-' + Date.now(),
+    text:      msg,
+    timestamp: new Date().toISOString(),
+    direction: 'outbound',
+    source:    'local'
+  };
+  pendingLocal.push(localMsg);
+  render();
 
-    try {
-      const res  = await fetch('/api/sms/send', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ phone, message: msg })
-      });
-      const data = await res.json();
+  try {
+    // ✅ Token passed in Authorization header
+    const res  = await fetch('/api/sms/send', {
+      method:  'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body:    JSON.stringify({ phone, message: msg })
+    });
+    const data = await res.json();
 
-      if (data.success) {
-        showStatus('success', `Sent to ${name}`);
-        msgInput.value = '';
-        msgInput.style.height = 'auto';
-        document.getElementById('charHint').textContent = '';
-        setTimeout(loadMessages, 2000);
-        setTimeout(loadMessages, 5000);
-      } else {
-        pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
-        render();
-        throw new Error(data.error || 'Failed to send');
-      }
-    } catch (err) {
+    if (data.success) {
+      showStatus('success', `Sent to ${name}`);
+      msgInput.value = '';
+      msgInput.style.height = 'auto';
+      document.getElementById('charHint').textContent = '';
+      setTimeout(loadMessages, 2000);
+      setTimeout(loadMessages, 5000);
+    } else {
       pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
       render();
-      showStatus('error', err.message);
-    } finally {
-      btn.disabled   = false;
-      icon.innerHTML = `<svg class="send-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
-      msgInput.focus();
+      throw new Error(data.error || 'Failed to send');
     }
+  } catch (err) {
+    pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
+    render();
+    showStatus('error', err.message);
+  } finally {
+    btn.disabled   = false;
+    icon.innerHTML = `<svg class="send-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+    msgInput.focus();
   }
+}
 
-  function showStatus(type, msg) {
-    const area = document.getElementById('statusArea');
-    const icon = type === 'success' ? '✓' : '✕';
-    area.innerHTML = `<div class="status-pill ${type}">${icon} ${msg}</div>`;
-    if (type === 'success') setTimeout(() => { area.innerHTML = ''; }, 3000);
-  }
-
-  if (phone) loadMessages();
-  setInterval(loadMessages, 10000);
-
-  msgInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendSMS(); }
-  });
-  msgInput.focus();
+function showStatus(type, msg) {
+  const area = document.getElementById('statusArea');
+  const icon = type === 'success' ? '✓' : '✕';
+  area.innerHTML = `<div class="status-pill ${type}">${icon} ${msg}</div>`;
+  if (type === 'success') setTimeout(() => { area.innerHTML = ''; }, 3000);
+}
 </script>
 </body>
 </html>
