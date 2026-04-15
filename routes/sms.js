@@ -1,14 +1,14 @@
 const express = require('express');
-const router  = express.Router();
-const axios   = require('axios');
+const router = express.Router();
+const axios = require('axios');
 const auth = require('../middleware/auth');
 
 const NS_CONFIG = {
-  baseUrl:     process.env.NETSAPIENS_API_URL,
-  domain:      process.env.EVENT_SUBSCRIPTION_DOMAIN,
-  userId:      process.env.NETSAPIENS_USER_ID,
+  baseUrl: process.env.NETSAPIENS_API_URL,
+  domain: process.env.EVENT_SUBSCRIPTION_DOMAIN,
+  userId: process.env.NETSAPIENS_USER_ID,
   bearerToken: process.env.NETSAPIENS_BEARER_TOKEN,
-  fromNumber:  process.env.NETSAPIENS_FROM_NUMBER
+  fromNumber: process.env.NETSAPIENS_FROM_NUMBER
 };
 
 const FIXED_SESSION_ID = (process.env.NETSAPIENS_SMS_SESSION_ID || '').toString();
@@ -22,7 +22,7 @@ function cleanPhone(phone) {
 
 function formatPhone(phone) {
   const c = cleanPhone(phone);
-  if (c.length === 10) return `(${c.substr(0,3)}) ${c.substr(3,3)}-${c.substr(6,4)}`;
+  if (c.length === 10) return `(${c.substr(0, 3)}) ${c.substr(3, 3)}-${c.substr(6, 4)}`;
   return phone;
 }
 
@@ -37,22 +37,22 @@ function normalizeSessionId(sessionId) {
 
 function determineDirection(msg, ourNumberClean, targetPhoneClean) {
   const apiDirection = msg.direction || '';
-  const fromNumber   = cleanPhone(msg['from-number'] || '');
+  const fromNumber = cleanPhone(msg['from-number'] || '');
   const dialedNumber = cleanPhone(msg.dialed || '');
 
-  if (apiDirection === 'orig')           return 'inbound';
-  if (apiDirection === 'term')           return 'outbound';
-  if (fromNumber === ourNumberClean)     return 'outbound';
-  if (fromNumber === targetPhoneClean)   return 'inbound';
+  if (apiDirection === 'orig') return 'inbound';
+  if (apiDirection === 'term') return 'outbound';
+  if (fromNumber === ourNumberClean) return 'outbound';
+  if (fromNumber === targetPhoneClean) return 'inbound';
   if (dialedNumber === targetPhoneClean) return 'outbound';
   return 'inbound';
 }
 
 function isOurConversation(msg, ourNumber, targetPhone) {
-  const from   = cleanPhone(msg['from-number'] || '');
+  const from = cleanPhone(msg['from-number'] || '');
   const dialed = cleanPhone(msg.dialed || '');
   return (from === ourNumber && dialed === targetPhone) ||
-         (from === targetPhone && dialed === ourNumber);
+    (from === targetPhone && dialed === ourNumber);
 }
 
 function isDuplicate(allMessages, msg, direction) {
@@ -65,11 +65,56 @@ function isDuplicate(allMessages, msg, direction) {
   });
 }
 
+app.get('/player', (req, res) => {
+  res.send(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Call Recording</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: #F5F5F5;
+    }
+    h3 { color: #333; }
+    audio { width: 90%; max-width: 400px; margin-top: 20px; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h3>:telephone_receiver: Call Recording</h3>
+  <audio id="player" controls></audio>
+  <p id="msg"></p>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const audioUrl = params.get("audio");
+    const audio = document.getElementById("player");
+    const msg = document.getElementById("msg");
+
+    if (audioUrl) {
+      audio.src = decodeURIComponent(audioUrl);
+      audio.load();
+    } else {
+      msg.textContent = "No recording URL provided.";
+      msg.className = "error";
+    }
+  </script>
+</body>
+</html>
+  `);
+});
+
 // ── GET /api/sms/history/:phone ───────────────────────────
 router.get('/history/:phone', auth, async (req, res) => {
-  const phone       = req.params.phone;
+  const phone = req.params.phone;
   const cleanPhone_ = cleanPhone(phone);
-  const ourNumber   = cleanPhone(NS_CONFIG.fromNumber);
+  const ourNumber = cleanPhone(NS_CONFIG.fromNumber);
   const allMessages = [];
 
   console.log(`\n📥 History for: ${cleanPhone_} | ourNumber: ${ourNumber}`);
@@ -77,7 +122,7 @@ router.get('/history/:phone', auth, async (req, res) => {
   try {
     if (FIXED_SESSION_ID) {
       try {
-        const url      = `${NS_CONFIG.baseUrl}/domains/${NS_CONFIG.domain}/users/${NS_CONFIG.userId}/messagesessions/${FIXED_SESSION_ID}/messages`;
+        const url = `${NS_CONFIG.baseUrl}/domains/${NS_CONFIG.domain}/users/${NS_CONFIG.userId}/messagesessions/${FIXED_SESSION_ID}/messages`;
         const response = await axios.get(url, {
           headers: { 'Authorization': `Bearer ${NS_CONFIG.bearerToken}` },
           timeout: 10000
@@ -88,7 +133,7 @@ router.get('/history/:phone', auth, async (req, res) => {
         messages.forEach((msg, idx) => {
           if (!isOurConversation(msg, ourNumber, cleanPhone_)) return;
           const direction = determineDirection(msg, ourNumber, cleanPhone_);
-          const msgTime   = new Date(msg.timestamp || 0).getTime();
+          const msgTime = new Date(msg.timestamp || 0).getTime();
           if (!isDuplicate(allMessages, msg, direction)) {
             allMessages.push({
               id: msg.id || `fixed-${idx}`, text: msg.text || '',
@@ -111,7 +156,7 @@ router.get('/history/:phone', auth, async (req, res) => {
       headers: { 'Authorization': `Bearer ${NS_CONFIG.bearerToken}` },
       timeout: 15000
     });
-    const sessions        = Array.isArray(sessionsRes.data) ? sessionsRes.data : [];
+    const sessions = Array.isArray(sessionsRes.data) ? sessionsRes.data : [];
     const matchedSessions = sessions.filter(s => {
       const sid = normalizeSessionId(s['messagesession-id']);
       if (sid === FIXED_SESSION_ID) return false;
@@ -122,7 +167,7 @@ router.get('/history/:phone', auth, async (req, res) => {
     for (const session of matchedSessions) {
       const sid = normalizeSessionId(session['messagesession-id']);
       try {
-        const url      = `${NS_CONFIG.baseUrl}/domains/${NS_CONFIG.domain}/users/${NS_CONFIG.userId}/messagesessions/${sid}/messages`;
+        const url = `${NS_CONFIG.baseUrl}/domains/${NS_CONFIG.domain}/users/${NS_CONFIG.userId}/messagesessions/${sid}/messages`;
         const response = await axios.get(url, {
           headers: { 'Authorization': `Bearer ${NS_CONFIG.bearerToken}` },
           timeout: 10000
@@ -132,10 +177,10 @@ router.get('/history/:phone', auth, async (req, res) => {
         messages.forEach((msg, idx) => {
           if (!isOurConversation(msg, ourNumber, cleanPhone_)) return;
           const direction = determineDirection(msg, ourNumber, cleanPhone_);
-          const msgTime   = new Date(msg.timestamp || 0).getTime();
+          const msgTime = new Date(msg.timestamp || 0).getTime();
           if (!isDuplicate(allMessages, msg, direction)) {
             allMessages.push({
-              id: msg.id || `session-${sid.substring(0,8)}-${idx}`,
+              id: msg.id || `session-${sid.substring(0, 8)}-${idx}`,
               text: msg.text || '', from: msg['from-number'] || '',
               to: msg.dialed || '',
               timestamp: msg.timestamp || new Date().toISOString(),
@@ -145,7 +190,7 @@ router.get('/history/:phone', auth, async (req, res) => {
             added++;
           }
         });
-        console.log(`   Session ${sid.substring(0,16)}...: ${added} messages added`);
+        console.log(`   Session ${sid.substring(0, 16)}...: ${added} messages added`);
       } catch (err) {
         console.error(`   ❌ Session ${sid} error: ${err.message}`);
       }
@@ -153,12 +198,14 @@ router.get('/history/:phone', auth, async (req, res) => {
 
     allMessages.forEach(m => delete m._rawTime);
     allMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-    const inbound  = allMessages.filter(m => m.direction === 'inbound').length;
+    const inbound = allMessages.filter(m => m.direction === 'inbound').length;
     const outbound = allMessages.filter(m => m.direction === 'outbound').length;
     console.log(`   ✅ Total: ${allMessages.length} (in:${inbound} out:${outbound})`);
 
-    res.json({ success: true, phone: cleanPhone_, messages: allMessages,
-      stats: { total: allMessages.length, inbound, outbound } });
+    res.json({
+      success: true, phone: cleanPhone_, messages: allMessages,
+      stats: { total: allMessages.length, inbound, outbound }
+    });
 
   } catch (error) {
     console.error('❌ SMS history error:', error.message);
@@ -173,12 +220,12 @@ router.post('/send', auth, async (req, res) => {
     return res.status(400).json({ success: false, error: 'Phone and message required' });
   }
   const cleanPhone_ = cleanPhone(phone);
-  const apiUrl      = `${NS_CONFIG.baseUrl}/domains/${NS_CONFIG.domain}/users/${NS_CONFIG.userId}/messagesessions/${FIXED_SESSION_ID}/messages`;
+  const apiUrl = `${NS_CONFIG.baseUrl}/domains/${NS_CONFIG.domain}/users/${NS_CONFIG.userId}/messagesessions/${FIXED_SESSION_ID}/messages`;
   try {
     await axios.post(apiUrl, {
-      type:          'sms',
-      message:       message.trim(),
-      destination:   cleanPhone_,
+      type: 'sms',
+      message: message.trim(),
+      destination: cleanPhone_,
       'from-number': NS_CONFIG.fromNumber
     }, {
       headers: { 'Authorization': `Bearer ${NS_CONFIG.bearerToken}`, 'Content-Type': 'application/json' },
@@ -202,7 +249,7 @@ router.post('/send', auth, async (req, res) => {
 // ── GET /api/sms/new-messages ─────────────────────────────
 // Used by Chrome extension to poll for new inbound messages
 router.get('/new-messages', auth, async (req, res) => {
-  const since     = req.query.since;
+  const since = req.query.since;
   const sinceDate = since ? new Date(since) : new Date(Date.now() - 60000);
   const ourNumber = cleanPhone(NS_CONFIG.fromNumber);
   const newInbound = [];
@@ -213,14 +260,14 @@ router.get('/new-messages', auth, async (req, res) => {
     // Check fixed session for new inbound messages
     if (FIXED_SESSION_ID) {
       try {
-        const url      = `${NS_CONFIG.baseUrl}/domains/${NS_CONFIG.domain}/users/${NS_CONFIG.userId}/messagesessions/${FIXED_SESSION_ID}/messages`;
+        const url = `${NS_CONFIG.baseUrl}/domains/${NS_CONFIG.domain}/users/${NS_CONFIG.userId}/messagesessions/${FIXED_SESSION_ID}/messages`;
         const response = await axios.get(url, {
           headers: { 'Authorization': `Bearer ${NS_CONFIG.bearerToken}` },
           timeout: 10000
         });
         const messages = Array.isArray(response.data) ? response.data : [];
         messages.forEach(msg => {
-          const msgTime  = new Date(msg.timestamp || 0);
+          const msgTime = new Date(msg.timestamp || 0);
           const fromClean = cleanPhone(msg['from-number'] || '');
           if (msgTime < sinceDate) return;
           if (fromClean === ourNumber) return; // skip outbound
@@ -232,11 +279,11 @@ router.get('/new-messages', auth, async (req, res) => {
           });
           if (!already) {
             newInbound.push({
-              id:        msg.id || `ext-fixed-${Date.now()}`,
-              text:      msg.text || '',
-              from:      msg['from-number'] || '',
-              to:        msg.dialed || '',
-              name:      formatPhone(fromClean),
+              id: msg.id || `ext-fixed-${Date.now()}`,
+              text: msg.text || '',
+              from: msg['from-number'] || '',
+              to: msg.dialed || '',
+              name: formatPhone(fromClean),
               timestamp: msg.timestamp,
               direction: 'inbound'
             });
@@ -254,25 +301,25 @@ router.get('/new-messages', auth, async (req, res) => {
       timeout: 15000
     });
     const sessions = Array.isArray(sessionsRes.data) ? sessionsRes.data : [];
-    const recent   = sessions.filter(s => {
-      const sid      = normalizeSessionId(s['messagesession-id']);
+    const recent = sessions.filter(s => {
+      const sid = normalizeSessionId(s['messagesession-id']);
       if (sid === FIXED_SESSION_ID) return false;
-      const lastAct  = s['messagesession-last-datetime'];
+      const lastAct = s['messagesession-last-datetime'];
       return lastAct && new Date(lastAct) >= sinceDate;
     });
 
     for (const session of recent) {
-      const sid        = normalizeSessionId(session['messagesession-id']);
+      const sid = normalizeSessionId(session['messagesession-id']);
       const remoteClean = cleanPhone(session['messagesession-remote'] || '');
       try {
-        const url      = `${NS_CONFIG.baseUrl}/domains/${NS_CONFIG.domain}/users/${NS_CONFIG.userId}/messagesessions/${sid}/messages`;
+        const url = `${NS_CONFIG.baseUrl}/domains/${NS_CONFIG.domain}/users/${NS_CONFIG.userId}/messagesessions/${sid}/messages`;
         const response = await axios.get(url, {
           headers: { 'Authorization': `Bearer ${NS_CONFIG.bearerToken}` },
           timeout: 10000
         });
         const messages = Array.isArray(response.data) ? response.data : [];
         messages.forEach(msg => {
-          const msgTime   = new Date(msg.timestamp || 0);
+          const msgTime = new Date(msg.timestamp || 0);
           const fromClean = cleanPhone(msg['from-number'] || '');
           if (msgTime < sinceDate) return;
           if (fromClean === ourNumber) return; // skip outbound
@@ -284,11 +331,11 @@ router.get('/new-messages', auth, async (req, res) => {
           });
           if (!already) {
             newInbound.push({
-              id:        msg.id || `ext-${sid.substring(0,8)}-${Date.now()}`,
-              text:      msg.text || '',
-              from:      msg['from-number'] || '',
-              to:        msg.dialed || '',
-              name:      formatPhone(remoteClean),
+              id: msg.id || `ext-${sid.substring(0, 8)}-${Date.now()}`,
+              text: msg.text || '',
+              from: msg['from-number'] || '',
+              to: msg.dialed || '',
+              name: formatPhone(remoteClean),
               timestamp: msg.timestamp,
               direction: 'inbound'
             });
@@ -302,8 +349,10 @@ router.get('/new-messages', auth, async (req, res) => {
     newInbound.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     console.log(`   🔔 Found ${newInbound.length} new inbound messages`);
 
-    res.json({ success: true, count: newInbound.length, messages: newInbound,
-      checkedAt: new Date().toISOString() });
+    res.json({
+      success: true, count: newInbound.length, messages: newInbound,
+      checkedAt: new Date().toISOString()
+    });
 
   } catch (error) {
     console.error('❌ Extension poll error:', error.message);
