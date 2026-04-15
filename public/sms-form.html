@@ -25,7 +25,7 @@
       background: #fff;
     }
 
-    /* â”€â”€ TOP HEADER â”€â”€ */
+    /* ── TOP HEADER ── */
     .header {
       flex-shrink: 0;
       display: flex;
@@ -64,7 +64,7 @@
     }
     @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-    /* â”€â”€ MESSAGES â”€â”€ */
+    /* ── MESSAGES ── */
     .messages-wrap {
       flex: 1; overflow-y: auto; overflow-x: hidden;
       padding: 16px 16px 8px; display: flex; flex-direction: column;
@@ -104,7 +104,7 @@
     }
     @keyframes spin { to{transform:rotate(360deg)} }
 
-    /* â”€â”€ AUTH GATE â”€â”€ */
+    /* ── AUTH GATE ── */
     .auth-gate {
       position: fixed; inset: 0; z-index: 9999;
       background: #fff; display: flex; flex-direction: column;
@@ -120,7 +120,7 @@
       border-radius: 50%; animation: spin 0.7s linear infinite;
     }
 
-    /* â”€â”€ STATUS BAR â”€â”€ */
+    /* ── STATUS BAR ── */
     .status-bar { flex-shrink: 0; min-height: 0; padding: 0 16px; }
     .status-pill {
       display: flex; align-items: center; gap: 6px;
@@ -131,7 +131,7 @@
     .status-pill.success { background: #E8F5E9; color: #2E7D32; }
     .status-pill.error   { background: #FCE8E6; color: #C62828; }
 
-    /* â”€â”€ BOTTOM INPUT BAR â”€â”€ */
+    /* ── BOTTOM INPUT BAR ── */
     .input-bar {
       flex-shrink: 0; display: flex; align-items: flex-end;
       gap: 8px; padding: 10px 12px; background: #fff;
@@ -165,10 +165,10 @@
 </head>
 <body>
 
-<!-- â”€â”€ AUTH GATE OVERLAY (shown while verifying) â”€â”€ -->
+<!-- ── AUTH GATE OVERLAY (shown while verifying) ── -->
 <div class="auth-gate" id="authGate">
   <div class="gate-spin"></div>
-  <h2>Verifying sessionâ€¦</h2>
+  <h2>Verifying session…</h2>
   <p>Please wait while we confirm your login.</p>
 </div>
 
@@ -203,7 +203,7 @@
   <div class="messages-wrap" id="msgScroll">
     <div class="state-box">
       <div class="big-spin"></div>
-      <p>Loading conversationâ€¦</p>
+      <p>Loading conversation…</p>
     </div>
   </div>
 
@@ -215,7 +215,7 @@
 
   <!-- INPUT BAR -->
   <div class="input-bar">
-    <textarea id="msgInput" placeholder="Type a messageâ€¦" maxlength="1600" rows="1"></textarea>
+    <textarea id="msgInput" placeholder="Type a message…" maxlength="1600" rows="1"></textarea>
     <button class="send-btn" id="sendBtn" onclick="sendSMS()">
       <span id="sendIcon">
         <svg class="send-icon" viewBox="0 0 24 24">
@@ -229,264 +229,10 @@
 </div><!-- /.app -->
 
 
-<script>
-// â”€â”€ Strip legacy params â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-(function () {
-Â Â const url = new URL(window.location.href);
-Â Â let changed = false;
-Â Â if (url.searchParams.has('key'))Â Â  { url.searchParams.delete('key');Â Â  changed = true; }
-Â Â if (url.searchParams.has('token')) { url.searchParams.delete('token'); changed = true; }
-Â Â if (changed) history.replaceState({}, '', url.toString());
-})();
 
-// â”€â”€ Read params â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const params = new URLSearchParams(window.location.search);
-const phoneÂ  = params.get('phone') || '';
-const nameÂ Â  = params.get('name')Â  || 'Customer';
-
-// â”€â”€ Get token â€” auth-check.js already verified + stored it â”€
-const token = sessionStorage.getItem('sms_auth_token') || '';
-
-// â”€â”€ Start app â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// No need to verify again â€” auth-check.js already did it
-// If token missing here, page is still hidden by auth-check.js
-if (token) {
-Â Â Â Â document.getElementById('authGate').style.display = 'none';
-Â Â Â Â document.getElementById('appShell').style.display = 'flex';
-Â Â Â Â initApp();
-}
-
-// â”€â”€ App init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function initApp() {
-Â Â if (phone) {
-Â Â Â Â const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
-Â Â Â Â document.getElementById('avatarEl').textContent = init || '?';
-Â Â Â Â document.getElementById('rname').textContentÂ Â Â  = name;
-Â Â Â Â document.getElementById('rphone').textContentÂ Â  = fmtPhone(phone);
-Â Â }
-
-Â Â const msgInput = document.getElementById('msgInput');
-Â Â msgInput.addEventListener('input', () => {
-Â Â Â Â msgInput.style.height = 'auto';
-Â Â Â Â msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
-Â Â Â Â const lenÂ  = msgInput.value.length;
-Â Â Â Â const hint = document.getElementById('charHint');
-Â Â Â Â if (len > 1200) {
-Â Â Â Â Â Â hint.textContent = `${len} / 1600`;
-Â Â Â Â Â Â hint.classNameÂ Â  = 'char-hint' + (len > 1400 ? ' danger' : ' warn');
-Â Â Â Â } else {
-Â Â Â Â Â Â hint.textContent = '';
-Â Â Â Â Â Â hint.classNameÂ Â  = 'char-hint';
-Â Â Â Â }
-Â Â });
-
-Â Â msgInput.addEventListener('keydown', e => {
-Â Â Â Â if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendSMS(); }
-Â Â });
-
-Â Â if (phone) loadMessages();
-Â Â setInterval(loadMessages, 10000);
-Â Â msgInput.focus();
-}
-
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-let apiMessagesÂ  = [];
-let pendingLocal = [];
-let isFirstLoadÂ  = true;
-let isLoadingÂ Â Â  = false;
-
-function authHeaders(extra = {}) {
-Â Â return { 'Authorization': `Bearer ${token}`, ...extra };
-}
-
-function fmtPhone(p) {
-Â Â const c = p.replace(/\D/g, '');
-Â Â return c.length === 10 ? `(${c.substr(0,3)}) ${c.substr(3,3)}-${c.substr(6,4)}` : p;
-}
-
-function fmtTime(ts) {
-Â Â if (!ts) return '';
-Â Â const dÂ Â Â  = new Date(ts), now = new Date();
-Â Â const days = Math.floor((now - d) / 86400000);
-Â Â const tÂ Â Â  = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-Â Â if (days === 0) return t;
-Â Â if (days === 1) return 'Yesterday Â· ' + t;
-Â Â return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' Â· ' + t;
-}
-
-function fmtDateLabel(ts) {
-Â Â const dÂ Â Â  = new Date(ts), now = new Date();
-Â Â const days = Math.floor((now - d) / 86400000);
-Â Â if (days === 0) return 'Today';
-Â Â if (days === 1) return 'Yesterday';
-Â Â return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-}
-
-function esc(t) {
-Â Â const d = document.createElement('div');
-Â Â d.textContent = t;
-Â Â return d.innerHTML;
-}
-
-function nearBottom() {
-Â Â const el = document.getElementById('msgScroll');
-Â Â return (el.scrollHeight - el.scrollTop - el.clientHeight) < 120;
-}
-
-function scrollDown() {
-Â Â const el = document.getElementById('msgScroll');
-Â Â el.scrollTop = el.scrollHeight;
-}
-
-function render() {
-Â Â const scrollÂ  = document.getElementById('msgScroll');
-Â Â const wasNear = nearBottom();
-Â Â scroll.innerHTML = '';
-
-Â Â const confirmedTexts = new Set(apiMessages.map(m => m.text.trim()));
-Â Â const visiblePending = pendingLocal.filter(p => !confirmedTexts.has(p.text.trim()));
-Â Â const combined = [...apiMessages, ...visiblePending]
-Â Â Â Â .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-Â Â if (!combined.length) {
-Â Â Â Â scroll.innerHTML = `
-Â Â Â Â Â Â <div class="state-box">
-Â Â Â Â Â Â Â Â <div class="state-icon">:speech_balloon:</div>
-Â Â Â Â Â Â Â Â <h3>No messages yet</h3>
-Â Â Â Â Â Â Â Â <p>Send the first message to start the conversation</p>
-Â Â Â Â Â Â </div>`;
-Â Â Â Â return;
-Â Â }
-
-Â Â let lastLabel = '';
-Â Â combined.forEach(msg => {
-Â Â Â Â const label = fmtDateLabel(msg.timestamp);
-Â Â Â Â if (label !== lastLabel) {
-Â Â Â Â Â Â lastLabel = label;
-Â Â Â Â Â Â const div = document.createElement('div');
-Â Â Â Â Â Â div.className = 'divider';
-Â Â Â Â Â Â div.innerHTML = `<div class="divider-line"></div><span class="divider-label">${label}</span><div class="divider-line"></div>`;
-Â Â Â Â Â Â scroll.appendChild(div);
-Â Â Â Â }
-Â Â Â Â const rowÂ Â Â Â  = document.createElement('div');
-Â Â Â Â const clsÂ Â Â Â  = msg.source === 'local' ? 'sending' : msg.direction;
-Â Â Â Â row.className = `msg-row ${cls}`;
-Â Â Â Â const senderÂ  = msg.direction === 'outbound' || msg.source === 'local' ? 'You' : name;
-Â Â Â Â row.innerHTML = `
-Â Â Â Â Â Â <div class="bubble">
-Â Â Â Â Â Â Â Â <div class="b-from">${esc(sender)}</div>
-Â Â Â Â Â Â Â Â <div class="b-text">${esc(msg.text)}</div>
-Â Â Â Â Â Â Â Â <div class="b-time">${msg.source === 'local' ? 'Sendingâ€¦' : fmtTime(msg.timestamp)}</div>
-Â Â Â Â Â Â </div>`;
-Â Â Â Â scroll.appendChild(row);
-Â Â });
-
-Â Â if (wasNear || isFirstLoad) scrollDown();
-}
-
-async function loadMessages() {
-Â Â if (isLoading || !phone) return;
-Â Â isLoading = true;
-Â Â try {
-Â Â Â Â const resÂ  = await fetch('/api/sms/history/' + phone, {
-Â Â Â Â Â Â headers: authHeaders()
-Â Â Â Â });
-Â Â Â Â const data = await res.json();
-
-Â Â Â Â if (data.success && data.messages) {
-Â Â Â Â Â Â const newSig = data.messages.map(m => m.id + m.direction + m.text).join('|');
-Â Â Â Â Â Â const oldSig = apiMessages.map(m => m.id + m.direction + m.text).join('|');
-Â Â Â Â Â Â if (newSig !== oldSig || isFirstLoad) {
-Â Â Â Â Â Â Â Â apiMessages = data.messages;
-Â Â Â Â Â Â Â Â render();
-Â Â Â Â Â Â }
-Â Â Â Â } else if (isFirstLoad) {
-Â Â Â Â Â Â document.getElementById('msgScroll').innerHTML = `
-Â Â Â Â Â Â Â Â <div class="state-box">
-Â Â Â Â Â Â Â Â Â Â <div class="state-icon">:speech_balloon:</div>
-Â Â Â Â Â Â Â Â Â Â <h3>No messages yet</h3>
-Â Â Â Â Â Â Â Â Â Â <p>Send the first message to start the conversation</p>
-Â Â Â Â Â Â Â Â </div>`;
-Â Â Â Â }
-Â Â Â Â isFirstLoad = false;
-Â Â } catch (err) {
-Â Â Â Â console.error(err);
-Â Â Â Â if (isFirstLoad) {
-Â Â Â Â Â Â document.getElementById('msgScroll').innerHTML = `
-Â Â Â Â Â Â Â Â <div class="state-box">
-Â Â Â Â Â Â Â Â Â Â <div class="state-icon">:warning:</div>
-Â Â Â Â Â Â Â Â Â Â <h3>Unable to load</h3>
-Â Â Â Â Â Â Â Â Â Â <p>Check your connection and try again</p>
-Â Â Â Â Â Â Â Â </div>`;
-Â Â Â Â }
-Â Â } finally {
-Â Â Â Â isLoading = false;
-Â Â }
-}
-
-async function sendSMS() {
-Â Â const msgInput = document.getElementById('msgInput');
-Â Â const msgÂ  = msgInput.value.trim();
-Â Â const btnÂ  = document.getElementById('sendBtn');
-Â Â const icon = document.getElementById('sendIcon');
-
-Â Â if (!msg)Â Â  { showStatus('error', 'Please enter a message'); return; }
-Â Â if (!phone) { showStatus('error', 'No phone number provided'); return; }
-
-Â Â btn.disabledÂ Â  = true;
-Â Â icon.innerHTML = '<div class="spin-sm"></div>';
-
-Â Â const localMsg = {
-Â Â Â Â id:Â Â Â Â Â Â Â  'local-' + Date.now(),
-Â Â Â Â text:Â Â Â Â Â  msg,
-Â Â Â Â timestamp: new Date().toISOString(),
-Â Â Â Â direction: 'outbound',
-Â Â Â Â source:Â Â Â  'local'
-Â Â };
-Â Â pendingLocal.push(localMsg);
-Â Â render();
-
-Â Â try {
-Â Â Â Â const resÂ  = await fetch('/api/sms/send', {
-Â Â Â Â Â Â method:Â  'POST',
-Â Â Â Â Â Â headers: authHeaders({ 'Content-Type': 'application/json' }),
-Â Â Â Â Â Â body:Â Â Â  JSON.stringify({ phone, message: msg })
-Â Â Â Â });
-Â Â Â Â const data = await res.json();
-
-Â Â Â Â if (data.success) {
-Â Â Â Â Â Â showStatus('success', `Sent to ${name}`);
-Â Â Â Â Â Â msgInput.value = '';
-Â Â Â Â Â Â msgInput.style.height = 'auto';
-Â Â Â Â Â Â document.getElementById('charHint').textContent = '';
-Â Â Â Â Â Â setTimeout(loadMessages, 2000);
-Â Â Â Â Â Â setTimeout(loadMessages, 5000);
-Â Â Â Â } else {
-Â Â Â Â Â Â pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
-Â Â Â Â Â Â render();
-Â Â Â Â Â Â throw new Error(data.error || 'Failed to send');
-Â Â Â Â }
-Â Â } catch (err) {
-Â Â Â Â pendingLocal = pendingLocal.filter(p => p.id !== localMsg.id);
-Â Â Â Â render();
-Â Â Â Â showStatus('error', err.message);
-Â Â } finally {
-Â Â Â Â btn.disabledÂ Â  = false;
-Â Â Â Â icon.innerHTML = `<svg class="send-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
-Â Â Â Â msgInput.focus();
-Â Â }
-}
-
-function showStatus(type, msg) {
-Â Â const area = document.getElementById('statusArea');
-Â Â const icon = type === 'success' ? 'âœ“' : 'âœ•';
-Â Â area.innerHTML = `<div class="status-pill ${type}">${icon} ${msg}</div>`;
-Â Â if (type === 'success') setTimeout(() => { area.innerHTML = ''; }, 3000);
-}
-</script>
 
 <!-- <script>
-// â”€â”€ STEP 1: Strip legacy ?key param â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── STEP 1: Strip legacy ?key param ──────────────────────
 (function () {
   const url = new URL(window.location.href);
   if (url.searchParams.has('key')) {
@@ -495,17 +241,17 @@ function showStatus(type, msg) {
   }
 })();
 
-// â”€â”€ STEP 2: Read URL params â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── STEP 2: Read URL params ───────────────────────────────
 const params = new URLSearchParams(window.location.search);
 const phone  = params.get('phone') || '';
 const name   = params.get('name')  || 'Customer';
 const token = sessionStorage.getItem('sms_auth_token') || '';
 
-// â”€â”€ STEP 3: Auth Gate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── STEP 3: Auth Gate ─────────────────────────────────────
 function showBlocked(message) {
   const gate = document.getElementById('authGate');
   gate.innerHTML = `
-    <div class="gate-icon">ðŸ”’</div>
+    <div class="gate-icon">🔒</div>
     <h2>Access Denied</h2>
     <p>${message}</p>
   `;
@@ -517,7 +263,7 @@ function revealApp() {
 }
 
 async function verifyAuth() {
-  // No token at all â†’ block immediately
+  // No token at all → block immediately
   if (!token) {
     showBlocked('Please open this page from the Chrome Extension.');
     return;
@@ -531,21 +277,21 @@ async function verifyAuth() {
     const data = await res.json();
 
     if (data.success) {
-      // âœ… Valid session â€” show the app
+      // ✅ Valid session — show the app
       revealApp();
       initApp();
     } else {
       showBlocked('Session expired. Please login again from the extension.');
     }
   } catch (err) {
-    // Network error â€” still block rather than allow
+    // Network error — still block rather than allow
     showBlocked('Unable to verify session. Check your connection and try again.');
   }
 }
 
 verifyAuth();
 
-// â”€â”€ STEP 4: App initialisation (only runs after auth pass) â”€
+// ── STEP 4: App initialisation (only runs after auth pass) ─
 function initApp() {
   if (phone) {
     const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
@@ -578,7 +324,7 @@ function initApp() {
   msgInput.focus();
 }
 
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Helpers ───────────────────────────────────────────────
 let apiMessages  = [];
 let pendingLocal = [];
 let isFirstLoad  = true;
@@ -599,8 +345,8 @@ function fmtTime(ts) {
   const days = Math.floor((now - d) / 86400000);
   const t    = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
   if (days === 0) return t;
-  if (days === 1) return 'Yesterday Â· ' + t;
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' Â· ' + t;
+  if (days === 1) return 'Yesterday · ' + t;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · ' + t;
 }
 
 function fmtDateLabel(ts) {
@@ -640,7 +386,7 @@ function render() {
   if (!combined.length) {
     scroll.innerHTML = `
       <div class="state-box">
-        <div class="state-icon">ðŸ’¬</div>
+        <div class="state-icon">💬</div>
         <h3>No messages yet</h3>
         <p>Send the first message to start the conversation</p>
       </div>`;
@@ -665,7 +411,7 @@ function render() {
       <div class="bubble">
         <div class="b-from">${esc(sender)}</div>
         <div class="b-text">${esc(msg.text)}</div>
-        <div class="b-time">${msg.source === 'local' ? 'Sendingâ€¦' : fmtTime(msg.timestamp)}</div>
+        <div class="b-time">${msg.source === 'local' ? 'Sending…' : fmtTime(msg.timestamp)}</div>
       </div>`;
     scroll.appendChild(row);
   });
@@ -677,7 +423,7 @@ async function loadMessages() {
   if (isLoading || !phone) return;
   isLoading = true;
   try {
-    // âœ… Token passed in Authorization header
+    // ✅ Token passed in Authorization header
     const res  = await fetch('/api/sms/history/' + phone, {
       headers: authHeaders()
     });
@@ -693,7 +439,7 @@ async function loadMessages() {
     } else if (isFirstLoad) {
       document.getElementById('msgScroll').innerHTML = `
         <div class="state-box">
-          <div class="state-icon">ðŸ’¬</div>
+          <div class="state-icon">💬</div>
           <h3>No messages yet</h3>
           <p>Send the first message to start the conversation</p>
         </div>`;
@@ -704,7 +450,7 @@ async function loadMessages() {
     if (isFirstLoad) {
       document.getElementById('msgScroll').innerHTML = `
         <div class="state-box">
-          <div class="state-icon">âš ï¸</div>
+          <div class="state-icon">⚠️</div>
           <h3>Unable to load</h3>
           <p>Check your connection and try again</p>
         </div>`;
@@ -737,7 +483,7 @@ async function sendSMS() {
   render();
 
   try {
-    // âœ… Token passed in Authorization header
+    // ✅ Token passed in Authorization header
     const res  = await fetch('/api/sms/send', {
       method:  'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
@@ -770,7 +516,7 @@ async function sendSMS() {
 
 function showStatus(type, msg) {
   const area = document.getElementById('statusArea');
-  const icon = type === 'success' ? 'âœ“' : 'âœ•';
+  const icon = type === 'success' ? '✓' : '✕';
   area.innerHTML = `<div class="status-pill ${type}">${icon} ${msg}</div>`;
   if (type === 'success') setTimeout(() => { area.innerHTML = ''; }, 3000);
 }
