@@ -230,7 +230,7 @@
 
 
 <script>
-// ── STEP 1: Strip legacy params from URL ─────────────────
+// ── Strip legacy params ───────────────────────────────────
 (function () {
   const url = new URL(window.location.href);
   let changed = false;
@@ -239,65 +239,24 @@
   if (changed) history.replaceState({}, '', url.toString());
 })();
 
-// ── STEP 2: Read URL params ───────────────────────────────
+// ── Read params ───────────────────────────────────────────
 const params = new URLSearchParams(window.location.search);
 const phone  = params.get('phone') || '';
 const name   = params.get('name')  || 'Customer';
-let token = '';
 
-// ── STEP 3: Wait for auth-check.js to fire the ready event ─
-document.addEventListener('sms_auth_ready', function(e) {
-    if (!e.detail.token) {
-        showBlocked('Please login from the Zoho Notifier Chrome Extension first.');
-        return;
-    }
-    token = e.detail.token;
-    verifyAuth();
-});
+// ── Get token — auth-check.js already verified + stored it ─
+const token = sessionStorage.getItem('sms_auth_token') || '';
 
-// Fallback: if event never fires within 3 seconds, block
-const authTimeout = setTimeout(() => {
-    if (!token) {
-        showBlocked('Please login from the Zoho Notifier Chrome Extension first.');
-    }
-}, 3000);
-
-// ── STEP 4: Auth Gate helpers ────────────────────────────
-function showBlocked(message) {
-  const gate = document.getElementById('authGate');
-  gate.innerHTML = `
-    <div class="gate-icon">:lock:</div>
-    <h2>Access Denied</h2>
-    <p>${message}</p>
-  `;
+// ── Start app ─────────────────────────────────────────────
+// No need to verify again — auth-check.js already did it
+// If token missing here, page is still hidden by auth-check.js
+if (token) {
+    document.getElementById('authGate').style.display = 'none';
+    document.getElementById('appShell').style.display = 'flex';
+    initApp();
 }
 
-function revealApp() {
-  document.getElementById('authGate').style.display = 'none';
-  document.getElementById('appShell').style.display = 'flex';
-}
-
-async function verifyAuth() {
-    clearTimeout(authTimeout);
-    try {
-        const res  = await fetch('https://zohotesting.streamtechnologies.in/user/verify', {
-            method:  'GET',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-
-        if (data.success) {
-            revealApp();
-            initApp();
-        } else {
-            showBlocked('Session expired. Please login again from the extension.');
-        }
-    } catch (err) {
-        showBlocked('Unable to verify session. Check your connection and try again.');
-    }
-}
-
-// ── STEP 5: App init (only after auth passes) ────────────
+// ── App init ──────────────────────────────────────────────
 function initApp() {
   if (phone) {
     const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
