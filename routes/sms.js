@@ -2,7 +2,6 @@ const express = require('express');
 const router  = express.Router();
 const axios   = require('axios');
 const auth = require('../middleware/auth');
-const activeSessions = {}; 
 
 const NS_CONFIG = {
   baseUrl:     process.env.NETSAPIENS_API_URL,
@@ -165,17 +164,6 @@ router.get('/history/:phone', auth, async (req, res) => {
     console.error('❌ SMS history error:', error.message);
     res.status(500).json({ success: false, error: error.message, messages: [] });
   }
-});
-
-router.post('/extension/heartbeat', auth, (req, res) => {
-    const extension = req.user.extension;
-
-    activeSessions[extension] = {
-        userId: req.user.id,
-        lastSeen: Date.now()
-    };
-
-    return res.json({ success: true });
 });
 
 // ── POST /api/sms/send ────────────────────────────────────
