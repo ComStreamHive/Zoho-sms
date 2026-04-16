@@ -226,12 +226,9 @@
     </button>
   </div>
 
-</div><!-- /.app -->
+</div>
 
-
-
-
-<!-- <script>
+<script>
 // ── STEP 1: Strip legacy ?key param ──────────────────────
 (function () {
   const url = new URL(window.location.href);
@@ -245,7 +242,7 @@
 const params = new URLSearchParams(window.location.search);
 const phone  = params.get('phone') || '';
 const name   = params.get('name')  || 'Customer';
-const token = sessionStorage.getItem('sms_auth_token') || '';
+const token  = sessionStorage.getItem('sms_auth_token') || '';
 
 // ── STEP 3: Auth Gate ─────────────────────────────────────
 function showBlocked(message) {
@@ -263,35 +260,32 @@ function revealApp() {
 }
 
 async function verifyAuth() {
-  // No token at all → block immediately
   if (!token) {
     showBlocked('Please open this page from the Chrome Extension.');
     return;
   }
 
   try {
-    const res  = await fetch('https://zohotesting.streamtechnologies.in/user/verify', {
+    const res  = await fetch('https://zohotesting.streamtechnologies.in/admin/verify', {
       method:  'GET',
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const data = await res.json();
 
     if (data.success) {
-      // ✅ Valid session — show the app
       revealApp();
       initApp();
     } else {
       showBlocked('Session expired. Please login again from the extension.');
     }
   } catch (err) {
-    // Network error — still block rather than allow
     showBlocked('Unable to verify session. Check your connection and try again.');
   }
 }
 
 verifyAuth();
 
-// ── STEP 4: App initialisation (only runs after auth pass) ─
+// ── STEP 4: App initialisation ────────────────────────────
 function initApp() {
   if (phone) {
     const init = name.split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
@@ -324,7 +318,7 @@ function initApp() {
   msgInput.focus();
 }
 
-// ── Helpers ───────────────────────────────────────────────
+// ── State ─────────────────────────────────────────────────
 let apiMessages  = [];
 let pendingLocal = [];
 let isFirstLoad  = true;
@@ -334,6 +328,7 @@ function authHeaders(extra = {}) {
   return { 'Authorization': `Bearer ${token}`, ...extra };
 }
 
+// ── Helpers ───────────────────────────────────────────────
 function fmtPhone(p) {
   const c = p.replace(/\D/g, '');
   return c.length === 10 ? `(${c.substr(0,3)}) ${c.substr(3,3)}-${c.substr(6,4)}` : p;
@@ -373,6 +368,7 @@ function scrollDown() {
   el.scrollTop = el.scrollHeight;
 }
 
+// ── Render ────────────────────────────────────────────────
 function render() {
   const scroll  = document.getElementById('msgScroll');
   const wasNear = nearBottom();
@@ -419,11 +415,11 @@ function render() {
   if (wasNear || isFirstLoad) scrollDown();
 }
 
+// ── Load Messages ─────────────────────────────────────────
 async function loadMessages() {
   if (isLoading || !phone) return;
   isLoading = true;
   try {
-    // ✅ Token passed in Authorization header
     const res  = await fetch('/api/sms/history/' + phone, {
       headers: authHeaders()
     });
@@ -460,6 +456,7 @@ async function loadMessages() {
   }
 }
 
+// ── Send SMS ──────────────────────────────────────────────
 async function sendSMS() {
   const msgInput = document.getElementById('msgInput');
   const msg  = msgInput.value.trim();
@@ -483,7 +480,6 @@ async function sendSMS() {
   render();
 
   try {
-    // ✅ Token passed in Authorization header
     const res  = await fetch('/api/sms/send', {
       method:  'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
@@ -514,12 +510,14 @@ async function sendSMS() {
   }
 }
 
+// ── Show Status ───────────────────────────────────────────
 function showStatus(type, msg) {
   const area = document.getElementById('statusArea');
   const icon = type === 'success' ? '✓' : '✕';
   area.innerHTML = `<div class="status-pill ${type}">${icon} ${msg}</div>`;
   if (type === 'success') setTimeout(() => { area.innerHTML = ''; }, 3000);
 }
-</script> -->
+</script>
+
 </body>
 </html>
