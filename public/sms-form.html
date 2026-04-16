@@ -328,68 +328,6 @@ function authHeaders(extra = {}) {
   return { 'Authorization': `Bearer ${token}`, ...extra };
 }
 
-// 🔄 Refresh Access Token
-async function refreshAccessToken() {
-  try {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (!refreshToken) throw new Error('No refresh token');
-
-    const res = await fetch('https://zohotesting.streamtechnologies.in/admin/refresh-token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken })
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      sessionStorage.setItem('sms_auth_token', data.accessToken);
-      localStorage.setItem('accessToken', data.accessToken);
-      return data.accessToken;
-    } else {
-      throw new Error('Refresh failed');
-    }
-
-  } catch (err) {
-    console.error('Refresh error:', err);
-    sessionStorage.removeItem('sms_auth_token');
-    localStorage.removeItem('accessToken');
-    window.location.reload();
-    throw err;
-  }
-}
-
-
-// 🔐 Fetch wrapper with auto-refresh
-async function fetchWithAuth(url, options = {}) {
-  let token = sessionStorage.getItem('sms_auth_token');
-
-  let res = await fetch(url, {
-    ...options,
-    headers: {
-      ...(options.headers || {}),
-      'Authorization': `Bearer ${token}`
-    }
-  });
-
-  if (res.status === 401) {
-    const newToken = await refreshAccessToken();
-
-    res = await fetch(url, {
-      ...options,
-      headers: {
-        ...(options.headers || {}),
-        'Authorization': `Bearer ${newToken}`
-      }
-    });
-  }
-
-  return res;
-}
-
-
-
-
 // ── Helpers ───────────────────────────────────────────────
 function fmtPhone(p) {
   const c = p.replace(/\D/g, '');
@@ -482,7 +420,7 @@ async function loadMessages() {
   if (isLoading || !phone) return;
   isLoading = true;
   try {
-    const res  = await fetchWithAuth('/api/sms/history/' + phone, {
+    const res  = await fetch('/api/sms/history/' + phone, {
       headers: authHeaders()
     });
     const data = await res.json();
@@ -542,7 +480,7 @@ async function sendSMS() {
   render();
 
   try {
-    const res  = await fetchWithAuth('/api/sms/send', {
+    const res  = await fetch('/api/sms/send', {
       method:  'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body:    JSON.stringify({ phone, message: msg })
@@ -578,38 +516,6 @@ function showStatus(type, msg) {
   const icon = type === 'success' ? '✓' : '✕';
   area.innerHTML = `<div class="status-pill ${type}">${icon} ${msg}</div>`;
   if (type === 'success') setTimeout(() => { area.innerHTML = ''; }, 3000);
-}
-
-// 🔄 Refresh Access Token
-async function refreshAccessToken() {
-  try {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (!refreshToken) throw new Error('No refresh token');
-
-    const res = await fetch('https://zohotesting.streamtechnologies.in/admin/refresh-token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken })
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      // ✅ update both storages
-      sessionStorage.setItem('sms_auth_token', data.accessToken);
-      localStorage.setItem('accessToken', data.accessToken);
-      return data.accessToken;
-    } else {
-      throw new Error('Refresh failed');
-    }
-
-  } catch (err) {
-    console.error('Refresh error:', err);
-    sessionStorage.removeItem('sms_auth_token');
-    localStorage.removeItem('accessToken');
-    window.location.reload(); // force re-login
-    throw err;
-  }
 }
 </script>
 
