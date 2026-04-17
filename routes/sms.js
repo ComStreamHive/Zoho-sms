@@ -19,6 +19,11 @@ function cleanPhone(phone) {
   if (c.length === 11 && c.startsWith('1')) return c.substring(1);
   return c;
 }
+function extKeyAuth(req, res, next) {
+    const key = req.headers['x-extension-key'];
+    if (key === 'zoho-sms-ext-2024') return next();
+    return res.status(401).json({ success: false, error: 'Unauthorized' });
+}
 
 function formatPhone(phone) {
   const c = cleanPhone(phone);
@@ -421,7 +426,7 @@ router.post('/send', auth, async (req, res) => {
 
 // ── GET /api/sms/new-messages ─────────────────────────────
 // Used by Chrome extension to poll for new inbound messages
-router.get('/new-messages', auth, async (req, res) => {
+router.get('/new-messages', extKeyAuth, async (req, res) => {
   const since = req.query.since;
   const sinceDate = since ? new Date(since) : new Date(Date.now() - 60000);
   const ourNumber = cleanPhone(NS_CONFIG.fromNumber);
