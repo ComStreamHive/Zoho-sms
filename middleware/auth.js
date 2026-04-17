@@ -7,11 +7,12 @@ module.exports = function (req, res, next) {
     const queryKey = req.query.key;
     const referer = req.headers.referer || '';
 
-    // console.log({
-    //     extensionKey,
-    //     queryKey,
-    //     authHeader: req.headers['authorization']
-    // });
+    console.log({
+        extensionKey,
+        queryKey,
+        referer,
+        authHeader: req.headers['authorization']
+    });
 
     // ✅ 1. Allow Chrome Extension
     if (extensionKey === 'zoho-sms-ext-2024') {
@@ -19,15 +20,15 @@ module.exports = function (req, res, next) {
         return next();
     }
 
-    // ✅ 2. Allow Zoho page
-    if (referer.includes('zohosms.streamtechnologies.in')) {
-        console.log("✅ Zoho page allowed");
+    // ✅ 2. Allow via query key (from popup click)
+    if (queryKey === 'zoho-sms-2024') {
+        console.log("✅ Query key allowed");
         return next();
     }
 
-    // ✅ 3. Allow via key
-    if (queryKey === 'zoho-sms-2024') {
-        console.log("✅ Key allowed");
+    // ✅ 3. Allow Zoho CRM (more correct check)
+    if (referer.includes('zoho.com') || referer.includes('zoho.in')) {
+        console.log("✅ Zoho allowed");
         return next();
     }
 
@@ -41,12 +42,17 @@ module.exports = function (req, res, next) {
 
     const token = authHeader.split(' ')[1];
 
- try {
-    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log("✅ JWT valid:", decoded);
-    next();
-} catch (err) {
-    // console.log("❌ JWT ERROR:", err.message);
-    return res.status(403).json({ success: false, message: err.message });
-}
+    if (!token) {
+        return res.status(401).json({ success: false, message: 'Invalid token format' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("✅ JWT valid");
+        req.user = decoded;
+        next();
+    } catch (err) {
+        console.log("❌ JWT ERROR:", err.message);
+        return res.status(403).json({ success: false, message: err.message });
+    }
 };
