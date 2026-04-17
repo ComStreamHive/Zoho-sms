@@ -110,7 +110,7 @@ app.get('/', (req, res) => {
 //   3. everything else  →  block
 //
 // WHY the key check is needed:
-//   When chrome.tabs.create() opens this URL, the browser tab sends
+//   When chrome.tabs.create() opens this URL, the browser tab sends 
 //   Referer: chrome-extension://[id]/popup.html  which is NOT in ALLOWED_SOURCES.
 //   The ?key param is the only signal we have that the request is from our extension.
 app.get('/sms-form.html', (req, res) => {

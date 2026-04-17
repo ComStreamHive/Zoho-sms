@@ -259,7 +259,33 @@ function revealApp() {
   document.getElementById('appShell').style.display = 'flex';
 }
 
+// async function verifyAuth() {
+//   if (!token) {
+//     showBlocked('Please open this page from the Chrome Extension.');
+//     return;
+//   }
+
+//   try {
+//     const res  = await fetch('https://zohotesting.streamtechnologies.in/admin/verify', {
+//       method:  'GET',
+//       headers: { 'Authorization': `Bearer ${token}` }
+//     });
+//     const data = await res.json();
+
+//     if (data.success) {
+//       revealApp();
+//       initApp();
+//     } else {
+//       showBlocked('Session expired. Please login again from the extension.');
+//     }
+//   } catch (err) {
+//     showBlocked('Unable to verify session. Check your connection and try again.');
+//   }
+// }
+
 async function verifyAuth() {
+  const token = sessionStorage.getItem('sms_auth_token');
+
   if (!token) {
     showBlocked('Please open this page from the Chrome Extension.');
     return;
@@ -270,16 +296,30 @@ async function verifyAuth() {
       method:  'GET',
       headers: { 'Authorization': `Bearer ${token}` }
     });
+
+    // 🚨 IMPORTANT: handle 401 properly
+    if (res.status === 401) {
+      sessionStorage.removeItem('sms_auth_token');
+      sessionStorage.removeItem('sms_refresh_token');
+      showBlocked('Session expired. Please login again.');
+      return;
+    }
+
     const data = await res.json();
 
     if (data.success) {
       revealApp();
       initApp();
     } else {
-      showBlocked('Session expired. Please login again from the extension.');
+      sessionStorage.removeItem('sms_auth_token');
+      sessionStorage.removeItem('sms_refresh_token');
+      showBlocked('Session expired. Please login again.');
     }
+
   } catch (err) {
-    showBlocked('Unable to verify session. Check your connection and try again.');
+    sessionStorage.removeItem('sms_auth_token');
+    sessionStorage.removeItem('sms_refresh_token');
+    showBlocked('Unable to verify session.');
   }
 }
 
