@@ -3,6 +3,7 @@ const cors       = require('cors');
 const bodyParser = require('body-parser');
 const path       = require('path');
 const axios      = require('axios');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const app = express();
@@ -123,6 +124,21 @@ app.get('/sms-form.html', (req, res) => {
     }
     console.log(`🔒 sms-form.html blocked | referer="${req.headers.referer}" key="${req.query.key}"`);
     res.status(403).send(ACCESS_DENIED_HTML);
+});
+
+app.get('/admin/verify', (req, res) => {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) return res.json({ success: false, message: 'No token' });
+
+    const token = authHeader.split(' ')[1];
+    if (!token) return res.json({ success: false, message: 'No token' });
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        return res.json({ success: true, user: decoded });
+    } catch (err) {
+        return res.json({ success: false, message: 'Invalid or expired token' });
+    }
 });
 
 // ── SMS API routes ────────────────────────────────────────────────────────────
