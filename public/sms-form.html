@@ -356,6 +356,29 @@ function initApp() {
   if (phone) loadMessages();
   setInterval(loadMessages, 10000);
   msgInput.focus();
+
+  // 🔥 ADD THIS BLOCK HERE (AUTO TOKEN REFRESH)
+  setInterval(async () => {
+    const refreshToken = sessionStorage.getItem('sms_refresh_token');
+    if (!refreshToken) return;
+
+    try {
+      const res = await fetch('https://zohotesting.streamtechnologies.in/adminauth/refresh-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        sessionStorage.setItem('sms_auth_token', data.accessToken);
+        console.log('🔄 Token refreshed silently');
+      }
+    } catch (err) {
+      console.log('Refresh failed');
+    }
+  }, 10 * 60 * 1000); // every 10 minutes
 }
 
 // ── State ─────────────────────────────────────────────────
@@ -460,7 +483,7 @@ async function loadMessages() {
   if (isLoading || !phone) return;
   isLoading = true;
   try {
-    const res  = await fetch('/api/sms/history/' + phone, {
+    const res  = await fetchWithAuth('/api/sms/history/' + phone, {
       headers: authHeaders()
     });
     const data = await res.json();
@@ -520,7 +543,7 @@ async function sendSMS() {
   render();
 
   try {
-    const res  = await fetch('/api/sms/send', {
+    const res  = await fetchWithAuth('/api/sms/send', {
       method:  'POST',
       headers: authHeaders({ 'Content-Type': 'application/json' }),
       body:    JSON.stringify({ phone, message: msg })
@@ -548,6 +571,50 @@ async function sendSMS() {
     icon.innerHTML = `<svg class="send-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
     msgInput.focus();
   }
+}
+
+async function fetchWithAuth(url, options = {}) {
+  let accessToken = sessionStorage.getItem('sms_auth_token');
+  let refreshToken = sessionStorage.getItem('sms_refresh_token');
+
+  options.headers = {
+    ...(options.headers || {}),
+    Authorization: `Bearer ${accessToken}`
+  };
+
+  let res = await fetch(url, options);
+
+  // 🔥 If token expired → try refresh
+  if (res.status === 401) {
+    console.log("🔄 Access token expired, refreshing...");
+
+    if (!refreshToken) {
+      throw new Error('Session expired');
+    }
+
+    // 🔁 Call refresh API
+    const refreshRes = await fetch('https://zohotesting.streamtechnologies.in/adminauth/refresh-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken })
+    });
+
+    const refreshData = await refreshRes.json();
+
+    if (!refreshData.success) {
+      sessionStorage.clear();
+      throw new Error('Session expired');
+    }
+
+    // ✅ Save new token
+    sessionStorage.setItem('sms_auth_token', refreshData.accessToken);
+
+    // 🔁 Retry original request
+    options.headers.Authorization = `Bearer ${refreshData.accessToken}`;
+    res = await fetch(url, options);
+  }
+
+  return res;
 }
 
 // ── Show Status ───────────────────────────────────────────
