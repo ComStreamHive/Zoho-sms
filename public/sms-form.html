@@ -284,7 +284,8 @@ function revealApp() {
 // }
 
 async function verifyAuth() {
-  const token = sessionStorage.getItem('sms_auth_token');
+  let token = sessionStorage.getItem('sms_auth_token');
+  const refreshToken = sessionStorage.getItem('sms_refresh_token');
 
   if (!token) {
     showBlocked('Please open this page from the Chrome Extension.');
@@ -292,18 +293,39 @@ async function verifyAuth() {
   }
 
   try {
-    const res  = await fetch('https://zohotesting.streamtechnologies.in/admin/verify', {
-      method:  'GET',
-      headers: { 'Authorization': `Bearer ${token}` }
+    let res = await fetch('https://zohotesting.streamtechnologies.in/admin/verify', {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}` }
     });
 
-    // 🚨 IMPORTANT: handle 401 properly
-    if (res.status === 401) {
-      sessionStorage.removeItem('sms_auth_token');
-      sessionStorage.removeItem('sms_refresh_token');
-      showBlocked('Session expired. Please login again.');
-      return;
+    // ✅ If expired → try refresh FIRST
+    if (res.status === 401 && refreshToken) {
+  try {
+    const refreshRes = await fetch('https://zohotesting.streamtechnologies.in/admin/refresh-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken })
+    });
+
+    const refreshData = await refreshRes.json();
+
+    if (!refreshData.success) {
+      throw new Error("Refresh failed");
     }
+
+    sessionStorage.setItem('sms_auth_token', refreshData.accessToken);
+
+    res = await fetch('https://zohotesting.streamtechnologies.in/admin/verify', {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${refreshData.accessToken}` }
+    });
+
+  } catch (err) {
+    sessionStorage.clear();
+    showBlocked('Session expired. Please login again.');
+    return;
+  }
+}
 
     const data = await res.json();
 
@@ -311,15 +333,12 @@ async function verifyAuth() {
       revealApp();
       initApp();
     } else {
-      sessionStorage.removeItem('sms_auth_token');
-      sessionStorage.removeItem('sms_refresh_token');
-      showBlocked('Session expired. Please login again.');
+      throw new Error("Invalid session");
     }
 
   } catch (err) {
-    sessionStorage.removeItem('sms_auth_token');
-    sessionStorage.removeItem('sms_refresh_token');
-    showBlocked('Unable to verify session.');
+    sessionStorage.clear();
+    showBlocked('Session expired. Please login again.');
   }
 }
 
@@ -363,7 +382,7 @@ function initApp() {
     if (!refreshToken) return;
 
     try {
-      const res = await fetch('https://zohotesting.streamtechnologies.in/adminauth/refresh-token', {
+      const res = await fetch('https://zohotesting.streamtechnologies.in/admin/refresh-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken })
@@ -378,7 +397,7 @@ function initApp() {
     } catch (err) {
       console.log('Refresh failed');
     }
-  }, 10 * 60 * 1000); // every 10 minutes
+  }, 5 * 60 * 1000); // every 10 minutes
 }
 
 // ── State ─────────────────────────────────────────────────
@@ -594,7 +613,7 @@ async function fetchWithAuth(url, options = {}) {
     }
 
     // 🔁 Call refresh API
-    const refreshRes = await fetch('https://zohotesting.streamtechnologies.in/adminauth/refresh-token', {
+    const refreshRes = await fetch('https://zohotesting.streamtechnologies.in/admin/refresh-token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken })
