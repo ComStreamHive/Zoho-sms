@@ -608,9 +608,24 @@ async function fetchWithAuth(url, options = {}) {
   if (res.status === 401) {
     console.log("🔄 Access token expired, refreshing...");
 
-    if (!refreshToken) {
-      throw new Error('Session expired');
-    }
+    // if (!refreshToken) {
+    //   throw new Error('Session expired');
+    // }
+
+
+if (!refreshToken) {
+  sessionStorage.clear();
+
+  showBlocked('Session expired. Please login again.');
+  document.getElementById('appShell').style.display = 'none';
+
+  throw new Error('Session expired');
+}
+
+
+
+
+
 
     // 🔁 Call refresh API
     const refreshRes = await fetch('https://zohotesting.streamtechnologies.in/admin/refresh-token', {
@@ -621,10 +636,25 @@ async function fetchWithAuth(url, options = {}) {
 
     const refreshData = await refreshRes.json();
 
-    if (!refreshData.success) {
-      sessionStorage.clear();
-      throw new Error('Session expired');
-    }
+    //if (!refreshData.success) {
+    //  sessionStorage.clear();
+    //  throw new Error('Session expired');
+   // }
+
+
+if (!refreshData.success) {
+  sessionStorage.clear();
+
+  // 🔥 FORCE UI BLOCK immediately
+  showBlocked('Session expired. Please login again.');
+  document.getElementById('appShell').style.display = 'none';
+
+  throw new Error('Session expired');
+}
+
+
+
+
 
     // ✅ Save new token
     sessionStorage.setItem('sms_auth_token', refreshData.accessToken);
